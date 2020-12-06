@@ -90,11 +90,11 @@ public class PS extends GraphicsProgram {
 			setImage(newImage);
 			infoLabel.setText(command + "已生效。");
 		} else if (command.equals("逆时针旋转")) {
-			GImage newImage = algorithms.rotateLeft(currentImage);
+			GImage newImage = algorithms.rotateCounterclockwise(currentImage);
 			setImage(newImage);
 			infoLabel.setText(command + "已生效。");
 		} else if (command.equals("顺时针旋转")) {
-			GImage newImage = algorithms.rotateRight(currentImage);
+			GImage newImage = algorithms.rotateClockwise(currentImage);
 			setImage(newImage);
 			infoLabel.setText(command + "已生效。");
 		} else if (command.equals("绿屏扣图")) {

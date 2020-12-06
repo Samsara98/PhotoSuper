@@ -4,8 +4,8 @@ import acm.graphics.GMath;
 public interface PSAlgorithmsInterface {
 	
 	public GImage flipHorizontal(GImage source);
-	public GImage rotateLeft(GImage source);
-	public GImage rotateRight(GImage source);
+	public GImage rotateCounterclockwise(GImage source);
+	public GImage rotateClockwise(GImage source);
 	public GImage greenScreen(GImage source);
 	public GImage negative(GImage source);
 	public GImage crop(GImage source, int cropX, int cropY, int cropWidth, int cropHeight);
