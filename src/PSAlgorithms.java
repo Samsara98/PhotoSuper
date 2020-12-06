@@ -1,5 +1,7 @@
 import acm.graphics.*;
 
+import java.awt.*;
+
 public class PSAlgorithms implements PSAlgorithmsInterface {
 
     public GImage rotateCounterclockwise(GImage source) {
@@ -22,8 +24,8 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
          ************************************************/
         for (int yNew = 0; yNew < newHeight; yNew++) {
             for (int xNew = 0; xNew < newWidth; xNew++) {
-            	int yOld = xNew;
-            	int xOld = oldWidth - yNew - 1;
+                int yOld = xNew;
+                int xOld = oldWidth - yNew - 1;
                 newPixelArray[yNew][xNew] = oldPixelArray[yOld][xOld];
             }
         }
@@ -42,8 +44,19 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
     public GImage negative(GImage source) {
-        // TODO
-        return null;
+        int[][] pixelArray = source.getPixelArray();
+        for (int row = 0; row < pixelArray.length; row++) {
+            for (int col = 0; col < pixelArray.length; col++) {
+                int pixel = pixelArray[col][row];
+                int r = GImage.getRed(pixel);
+                int g = GImage.getGreen(pixel);
+                int b = GImage.getBlue(pixel);
+                int newPixel = GImage.createRGBPixel(255 - r, 255 - b, 255 - g);
+                pixelArray[col][row] = newPixel;
+            }
+        }
+
+        return new GImage(pixelArray);
     }
 
     public GImage greenScreen(GImage source) {
