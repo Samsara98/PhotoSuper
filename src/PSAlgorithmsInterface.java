@@ -2,6 +2,8 @@ import acm.graphics.GImage;
 import acm.graphics.GMath;
 
 public interface PSAlgorithmsInterface {
+
+	public static final int CONVOLUTION_RADIUS = 1;
 	
 	public GImage flipHorizontal(GImage source);
 	public GImage rotateCounterclockwise(GImage source);
@@ -9,7 +11,7 @@ public interface PSAlgorithmsInterface {
 	public GImage greenScreen(GImage source);
 	public GImage negative(GImage source);
 	public GImage crop(GImage source, int cropX, int cropY, int cropWidth, int cropHeight);
-	public GImage blur(GImage source);
+	public GImage convolution(GImage source);
 	
 	/* 计算图片亮度 */
 	public default int computeLuminosity(int r, int g, int b) {

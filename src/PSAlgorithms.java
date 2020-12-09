@@ -17,7 +17,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
          ************************************************/
         int newHeight = oldWidth;                               // 新图片高度等于旧图片宽度
         int newWidth = oldHeight;                               // 新图片宽度等于旧图片高度
-        int[][] newPixelArray = new int[newHeight][newWidth];   // 为新图片新建一个数组
+        int[][] newPixelArray = new int[newHeight][newWidth];   // 为新图片新建一个数组，行数是newHeight，列数是newWidth
 
         /************************************************
          * 新旧数组的像素对应关系
@@ -64,11 +64,20 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return null;
     }
 
-    public GImage blur(GImage source) {
+    public GImage convolution(GImage source) {
         // TODO
         return null;
     }
 
+    /**
+     * 裁剪图片，裁剪后仅保留选区内容，其他全部删掉
+     * @param source        要被裁剪的原始图片
+     * @param cropX         选区左上角的x坐标
+     * @param cropY         选区左上角的y坐标
+     * @param cropWidth     选区的宽度
+     * @param cropHeight    选区的高度
+     * @return              裁剪后的图片
+     */
     public GImage crop(GImage source, int cropX, int cropY, int cropWidth, int cropHeight) {
         // TODO
         return null;

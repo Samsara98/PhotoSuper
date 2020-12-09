@@ -118,7 +118,7 @@ public class PS extends GraphicsProgram {
                 showErrorPopup("请选择裁剪区域");
             }
         } else if (command.equals("卷积")) {
-            GImage newImage = algorithms.blur(currentImage);
+            GImage newImage = algorithms.convolution(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
         } else {
