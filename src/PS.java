@@ -62,7 +62,6 @@ public class PS extends GraphicsProgram {
         add(new JButton("绿屏扣图"), WEST);
         add(new JButton("卷积"), WEST);
         add(new JButton("裁剪"), WEST);
-        add(new JButton("均衡化"), WEST);
 
         // NORTH是窗口上部
         infoLabel = new JLabel("槑图秀秀");
