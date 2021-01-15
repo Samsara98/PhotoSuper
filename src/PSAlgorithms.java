@@ -109,12 +109,13 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
+        int[][] newPixelArrary = new int[Height][Width];
         for (int newy = 0; newy < Height; newy++) {
             for (int newx = 0; newx < Width; newx++) {
-                pixelArrary[newy][newx] = getAverageRGB(pixelArrary, newx, newy);
+                newPixelArrary [newy][newx] = getAverageRGB(pixelArrary, newx, newy);
             }
         }
-        return new GImage(pixelArrary);
+        return new GImage(newPixelArrary);
     }
 
     private int getAverageRGB(int[][] pixelArrary, int x, int y) {  //取卷积半径内RGB平均值
@@ -125,6 +126,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         java.util.List<Integer> b = new ArrayList<>();
         for (int x_ : xArrary) {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
+                System.out.println(x_);
                 for (int y_ : yArrary) {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
                         r.add(GImage.getRed(pixelArrary[y_][x_]));
