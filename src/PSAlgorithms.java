@@ -1,7 +1,4 @@
 import acm.graphics.*;
-
-import java.awt.*;
-import java.awt.List;
 import java.util.ArrayList;
 
 
@@ -47,7 +44,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int oldWidth = oldPixelArray[0].length;             // 旧图片宽度
 
         /************************************************
-         * 旋转前，旧图片的信息
+         * 旋转后，新图片的信息
          ************************************************/
         int newHeight = oldWidth;                               // 新图片高度等于旧图片宽度
         int newWidth = oldHeight;                               // 新图片宽度等于旧图片高度
