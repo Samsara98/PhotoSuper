@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class PSAlgorithms implements PSAlgorithmsInterface {
 
-    static int CONVOLUTION_RADIUS = 1; //卷积半径
 
     public GImage rotateCounterclockwise(GImage source) {
         /************************************************
