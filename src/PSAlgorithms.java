@@ -1,4 +1,5 @@
 import acm.graphics.*;
+
 import java.util.ArrayList;
 
 
@@ -112,7 +113,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] newPixelArrary = new int[Height][Width];
         for (int newy = 0; newy < Height; newy++) {
             for (int newx = 0; newx < Width; newx++) {
-                newPixelArrary [newy][newx] = getAverageRGB(pixelArrary, newx, newy);
+                newPixelArrary[newy][newx] = getAverageRGB(pixelArrary, newx, newy);
             }
         }
         return new GImage(newPixelArrary);
