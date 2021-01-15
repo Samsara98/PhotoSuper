@@ -233,11 +233,16 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
             for (int x_ = 0; x_ < Width; x_++) {
                 int Luminosity = getLuminosity(pixelArray[y_][x_]);
-                int sum = 0;
+                /*int sum = 0;
                 for (int i = Luminosity + 1; i < 256; i++) {
                     sum += pixelLuminosity[i];
+                }*/
+                //int rgb = 255 * ((Height * Width) - sum) / (Height * Width);
+                int size=0;
+                for (int i = 0; i < Luminosity + 1; i++) {
+                    size+=pixelLuminosity[i];
                 }
-                int rgb = 255 * ((Height * Width) - sum) / (Height * Width);
+                int rgb=256*size/(Height*Width);
                 newPixelArray[y_][x_] = GImage.createRGBPixel(rgb, rgb, rgb);
             }
         }
