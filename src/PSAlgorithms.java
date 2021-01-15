@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class PSAlgorithms implements PSAlgorithmsInterface {
 
-    static int CONVOLUTION_RADIUS =1; //卷积半径
+    static int CONVOLUTION_RADIUS = 1; //卷积半径
 
     public GImage rotateCounterclockwise(GImage source) {
         /************************************************
@@ -133,22 +133,8 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
     private int getAverageRGB(int[][] pixelArrary, int x, int y) {  //取卷积半径内RGB平均值
-        int[] xArrary = new int[(1+2*CONVOLUTION_RADIUS)];
-        int[] yArrary = new int[(1+2*CONVOLUTION_RADIUS)];
-        xArrary[0] = x;
-        yArrary[0] = y;
-        int num =CONVOLUTION_RADIUS;
-        for (int i = 1; i <= xArrary.length-2; i+=2) {
-            xArrary[i] = x+num;
-            xArrary[i+1] = x-num;
-            num --;
-        }
-        int num2 =CONVOLUTION_RADIUS;
-        for (int i = 1; i <= yArrary.length-2; i+=2) {
-            yArrary[i] = y+1;
-            yArrary[i+1] = y-1;
-            num2--;
-        }
+        int[] xArrary = getArrary(x);
+        int[] yArrary = getArrary(y);
         java.util.List<Integer> r = new ArrayList<>();
         java.util.List<Integer> g = new ArrayList<>();
         java.util.List<Integer> b = new ArrayList<>();
@@ -163,16 +149,29 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 }
             }
         }
-            Integer sumr = sum(r);
-            Integer sumg = sum(g);
-            Integer sumb = sum(b);
+        int aver_r = getAver(r);
+        int aver_g = getAver(g);
+        int aver_b = getAver(b);
+        return GImage.createRGBPixel(aver_r, aver_g, aver_b);
+    }
 
-            int aver_r = sumr/r.size();
-            int aver_g = sumg/g.size();
-            int aver_b = sumb/b.size();
+    private int getAver(java.util.List<Integer> r) {
+        Integer sum = sum(r);
+        int aver = sum / r.size();
+        return aver;
+    }
 
-            return GImage.createRGBPixel(aver_r, aver_g, aver_b);
+    private int[] getArrary(int x) {
+        int[] xArrary = new int[(1 + 2 * CONVOLUTION_RADIUS)];
+        xArrary[0] = x;
+        int num = CONVOLUTION_RADIUS;
+        for (int i = 1; i <= xArrary.length - 2; i += 2) {
+            xArrary[i] = x + num;
+            xArrary[i + 1] = x - num;
+            num--;
         }
+        return xArrary;
+    }
 
 
     private Integer sum(java.util.List<Integer> r) {
