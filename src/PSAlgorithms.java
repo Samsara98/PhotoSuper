@@ -13,7 +13,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int oldWidth = oldPixelArray[0].length;             // 图片宽度
 
         /************************************************
-         * 旋转前，旧图片的信息
+         * 旋转后，新图片的信息
          ************************************************/
         int newHeight = oldWidth;                               // 新图片高度等于旧图片宽度
         int newWidth = oldHeight;                               // 新图片宽度等于旧图片高度
@@ -107,7 +107,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int Height = pixelArrary.length;
         for (int newy = 0; newy < Height; newy++) {
             for (int newx = 0; newx < Width; newx++) {
-                if (isGreen(pixelArrary[newy][newx])){
+                if (isGreen(pixelArrary[newy][newx])) {
                     int transparentPixel = GImage.createRGBPixel(0, 0, 0, 0);
                     pixelArrary[newy][newx] = transparentPixel;
                 }
@@ -122,16 +122,11 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int r = GImage.getRed(pixel);
         int g = GImage.getGreen(pixel);
         int b = GImage.getBlue(pixel);
-        if (r >= b){
-            if (g >= 2* r){
-                return true;
-            }
-        }else {
-            if (g >= 2* b){
-                return true;
-            }
+        if (r >= b) {
+            return g >= 2 * r;
+        } else {
+            return g >= 2 * b;
         }
-        return false;
     }
 
     public GImage convolution(GImage source) {   //卷积算法
@@ -190,8 +185,8 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
 
     private Integer sum(java.util.List<Integer> r) {  //求List和
         int sum = 0;
-        for (int i = 0; i < r.size(); i++) {
-            sum += r.get(i);
+        for (Integer integer : r) {
+            sum += integer;
         }
         return sum;
     }
@@ -222,7 +217,6 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
 
     /**
      * 均衡化
-     *
      */
     public GImage equalization(GImage source) {   //均衡化算法
         int[][] pixelArray = source.getPixelArray(); //旧图片的像素数组
@@ -230,19 +224,19 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int Height = pixelArray.length;
         int[][] newPixelArray = new int[Height][Width];  //新图片的像素数组
         int[] pixelLuminosity = new int[256];  //保存某亮度像素数量的数组，
-        for (int y = 0; y < Height; y++) {  //获取全像素亮度
+        for (int[] ints : pixelArray) {  //获取全像素亮度
             for (int x = 0; x < Width; x++) {
-                int Luminosity = getLuminosity(pixelArray[y][x]);
+                int Luminosity = getLuminosity(ints[x]);
                 pixelLuminosity[Luminosity] += 1;
             }
         }
         for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
-            for (int x_= 0; x_ < Width; x_++) {
+            for (int x_ = 0; x_ < Width; x_++) {
                 int Luminosity = getLuminosity(pixelArray[y_][x_]);
-                int sum =0;
-                for (int i = Luminosity+1; i < 256 ; i++) {
+                int sum = 0;
+                for (int i = Luminosity + 1; i < 256; i++) {
                     sum += pixelLuminosity[i];
-                    int rgb = 255*((Height*Width)-sum)/(Height*Width);
+                    int rgb = 255 * ((Height * Width) - sum) / (Height * Width);
                     newPixelArray[y_][x_] = GImage.createRGBPixel(rgb, rgb, rgb);
                 }
             }
@@ -255,6 +249,6 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int r = GImage.getRed(pixel);
         int g = GImage.getGreen(pixel);
         int b = GImage.getBlue(pixel);
-        return computeLuminosity(r,g,b);
+        return computeLuminosity(r, g, b);
     }
 }
