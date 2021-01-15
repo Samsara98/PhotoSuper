@@ -143,8 +143,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
 
     private int getAver(java.util.List<Integer> r) {  //取List平均值
         Integer sum = sum(r);
-        int aver = sum / r.size();
-        return aver;
+        return sum / r.size();
     }
 
     private int[] getArrary(int x) {  //获得像素卷积半径内的像素坐标
