@@ -219,19 +219,24 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArray);
     }
 
-    public GImage equalization(GImage source) {
+
+    /**
+     * 均衡化
+     *
+     */
+    public GImage equalization(GImage source) {   //均衡化算法
         int[][] pixelArray = source.getPixelArray(); //旧图片的像素数组
         int Width = pixelArray[0].length;
         int Height = pixelArray.length;
-        int[][] newPixelArray = new int[Height][Width];  //裁剪后图片的像素数组
-        int[] pixelLuminosity = new int[256];  //像素亮度数组
-        for (int y = 0; y < Height; y++) {
+        int[][] newPixelArray = new int[Height][Width];  //新图片的像素数组
+        int[] pixelLuminosity = new int[256];  //保存某亮度像素数量的数组，
+        for (int y = 0; y < Height; y++) {  //获取全像素亮度
             for (int x = 0; x < Width; x++) {
                 int Luminosity = getLuminosity(pixelArray[y][x]);
                 pixelLuminosity[Luminosity] += 1;
             }
         }
-        for (int y_ = 0; y_ < Height; y_++) {
+        for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
             for (int x_= 0; x_ < Width; x_++) {
                 int Luminosity = getLuminosity(pixelArray[y_][x_]);
                 int sum =0;
@@ -246,7 +251,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArray);
     }
 
-    private int getLuminosity(int pixel) {
+    private int getLuminosity(int pixel) {   //根据像素获取亮度
         int r = GImage.getRed(pixel);
         int g = GImage.getGreen(pixel);
         int b = GImage.getBlue(pixel);
