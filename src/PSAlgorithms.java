@@ -102,8 +102,36 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
     public GImage greenScreen(GImage source) {
-        // TODO
-        return null;
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+        for (int newy = 0; newy < Height; newy++) {
+            for (int newx = 0; newx < Width; newx++) {
+                if (isGreen(pixelArrary[newy][newx])){
+                    int transparentPixel = GImage.createRGBPixel(0, 0, 0, 0);
+                    pixelArrary[newy][newx] = transparentPixel;
+                }
+
+
+            }
+        }
+        return new GImage(pixelArrary);
+    }
+
+    private boolean isGreen(int pixel) {
+        int r = GImage.getRed(pixel);
+        int g = GImage.getGreen(pixel);
+        int b = GImage.getBlue(pixel);
+        if (r >= b){
+            if (g >= 2* r){
+                return true;
+            }
+        }else {
+            if (g >= 2* b){
+                return true;
+            }
+        }
+        return false;
     }
 
     public GImage convolution(GImage source) {   //卷积算法
