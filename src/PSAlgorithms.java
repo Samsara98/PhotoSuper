@@ -218,4 +218,38 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return new GImage(newPixelArray);
     }
+
+    public GImage equalization(GImage source) {
+        int[][] pixelArray = source.getPixelArray(); //旧图片的像素数组
+        int Width = pixelArray[0].length;
+        int Height = pixelArray.length;
+        int[][] newPixelArray = new int[Height][Width];  //裁剪后图片的像素数组
+        int[] pixelLuminosity = new int[256];  //像素亮度数组
+        for (int y = 0; y < Height; y++) {
+            for (int x = 0; x < Width; x++) {
+                int Luminosity = getLuminosity(pixelArray[y][x]);
+                pixelLuminosity[Luminosity] += 1;
+            }
+        }
+        for (int y_ = 0; y_ < Height; y_++) {
+            for (int x_= 0; x_ < Width; x_++) {
+                int Luminosity = getLuminosity(pixelArray[y_][x_]);
+                int sum =0;
+                for (int i = Luminosity+1; i < 256 ; i++) {
+                    sum += pixelLuminosity[i];
+                    int rgb = 255*((Height*Width)-sum)/(Height*Width);
+                    newPixelArray[y_][x_] = GImage.createRGBPixel(rgb, rgb, rgb);
+                }
+            }
+        }
+
+        return new GImage(newPixelArray);
+    }
+
+    private int getLuminosity(int pixel) {
+        int r = GImage.getRed(pixel);
+        int g = GImage.getGreen(pixel);
+        int b = GImage.getBlue(pixel);
+        return computeLuminosity(r,g,b);
+    }
 }
