@@ -93,7 +93,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
 
     public GImage negative(GImage source) {
         int[][] pixelArray = source.getPixelArray();
-        for (int row = 0; row < pixelArray.length; row++) {
+        for (int row = 0; row < pixelArray[0].length; row++) {
             for (int col = 0; col < pixelArray.length; col++) {
                 int pixel = pixelArray[col][row];
                 int r = GImage.getRed(pixel);
