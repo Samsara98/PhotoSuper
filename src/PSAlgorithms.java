@@ -1,6 +1,8 @@
 import acm.graphics.*;
 
 import java.awt.*;
+import java.awt.List;
+import java.util.ArrayList;
 
 public class PSAlgorithms implements PSAlgorithmsInterface {
 
@@ -62,7 +64,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArray);
     }
 
-    public GImage flipHorizontal(GImage source) {
+    public GImage flipHorizontal(GImage source) {  //水平翻转算法
         /************************************************
          * 旋转前，旧图片的信息
          ************************************************/
@@ -73,8 +75,8 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         /************************************************
          * 旋转前，旧图片的信息
          ************************************************/
-        int newHeight = oldHeight;                               // 新图片高度等于旧图片宽度
-        int newWidth = oldWidth;                               // 新图片宽度等于旧图片高度
+        int newHeight = oldHeight;                               // 新图片高度等于旧图片高度
+        int newWidth = oldWidth;                               // 新图片宽度等于旧图片宽度
         int[][] newPixelArray = new int[newHeight][newWidth];   // 为新图片新建一个数组，行数是newHeight，列数是newWidth
 
         /************************************************
@@ -87,11 +89,12 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 newPixelArray[yNew][xNew] = oldPixelArray[yOld][xOld];
             }
         }
+        System.out.println(newPixelArray[1][1]);
 
         return new GImage(newPixelArray);
     }
 
-    public GImage negative(GImage source) {
+    public GImage negative(GImage source) {  //反相算法
         int[][] pixelArray = source.getPixelArray();
         for (int row = 0; row < pixelArray[0].length; row++) {
             for (int col = 0; col < pixelArray.length; col++) {
@@ -100,7 +103,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 int g = GImage.getGreen(pixel);
                 int b = GImage.getBlue(pixel);
                 int newPixel = GImage.createRGBPixel(255 - r, 255 - g, 255 - b);
-                pixelArray[col][row] = newPixel;
+                pixelArray[col][row] = newPixel;  //将像素替换为反相后的像素
             }
         }
 
@@ -112,23 +115,70 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return null;
     }
 
-    public GImage convolution(GImage source) {
-        // TODO
-        return null;
+    public GImage convolution(GImage source) {   //卷积算法
+        int[][] pixelArrary = source.getPixelArray();  //旧图像
+        int oldWidth = pixelArrary[0].length;
+        int oldHeight = pixelArrary.length;
+        int[][] newpixelArrary = new int[oldHeight][oldWidth];  //新图像
+
+        for (int newy = 0; newy < oldHeight; newy++) {
+            for (int newx = 0; newx < oldWidth; newx++) {
+                newpixelArrary[newy][newx] = getAverageRGB(pixelArrary, newx, newy);
+            }
+        }
+        return new GImage(newpixelArrary);
+    }
+
+    private int getAverageRGB(int[][] pixelArrary, int x, int y) {
+        int[] xArrary = {x, x + 1, x - 1};
+        int[] yArrary = {y, y + 1, y - 1};
+        java.util.List<Integer> r = new ArrayList<>();
+        java.util.List<Integer> g = new ArrayList<>();
+        java.util.List<Integer> b = new ArrayList<>();
+        for (int x_ : xArrary) {
+            if (x_ >= 0 && x_ < pixelArrary[0].length) {
+                for (int y_ : yArrary) {
+                    if (y_ >= 0 && y_ < pixelArrary.length) {
+                        r.add(GImage.getRed(pixelArrary[y_][x_]));
+                        g.add(GImage.getGreen(pixelArrary[y_][x_]));
+                        b.add(GImage.getBlue(pixelArrary[y_][x_]));
+                    }
+                }
+            }
+        }
+            Integer sumr = sum(r);
+            Integer sumg = sum(g);
+            Integer sumb = sum(b);
+
+            int aver_r = sumr/r.size();
+            int aver_g = sumg/g.size();
+            int aver_b = sumb/b.size();
+
+            return GImage.createRGBPixel(aver_r, aver_g, aver_b);
+        }
+
+
+    private Integer sum(java.util.List<Integer> r) {
+        int sum = 0;
+        for (int i = 0; i < r.size(); i++) {
+            sum += r.get(i);
+        }
+        return sum;
     }
 
     /**
      * 裁剪图片，裁剪后仅保留选区内容，其他全部删掉
-     * @param source        要被裁剪的原始图片
-     * @param cropX         选区左上角的x坐标
-     * @param cropY         选区左上角的y坐标
-     * @param cropWidth     选区的宽度
-     * @param cropHeight    选区的高度
-     * @return              裁剪后的图片
+     *
+     * @param source     要被裁剪的原始图片
+     * @param cropX      选区左上角的x坐标
+     * @param cropY      选区左上角的y坐标
+     * @param cropWidth  选区的宽度
+     * @param cropHeight 选区的高度
+     * @return 裁剪后的图片
      */
-    public GImage crop(GImage source, int cropX, int cropY, int cropWidth, int cropHeight) {
+    public GImage crop(GImage source, int cropX, int cropY, int cropWidth, int cropHeight) {  //裁剪算法
         int[][] pixelArray = source.getPixelArray(); //旧图片的像素数组
-        int[][] newPixelArray = new int[cropHeight][cropWidth]; //旧图片的像素数组
+        int[][] newPixelArray = new int[cropHeight][cropWidth]; //裁剪后图片的像素数组
         for (int y = 0; y < cropHeight; y++) {
             for (int x = 0; x < cropWidth; x++) {
                 int newx = cropX + x;
