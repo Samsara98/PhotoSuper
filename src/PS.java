@@ -12,6 +12,7 @@ import javax.imageio.*;
 import javax.swing.*;
 
 
+
 public class PS extends GraphicsProgram {
 
     public static final int APPLICATION_HEIGHT = 600;

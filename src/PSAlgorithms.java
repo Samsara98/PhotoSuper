@@ -4,7 +4,10 @@ import java.awt.*;
 import java.awt.List;
 import java.util.ArrayList;
 
+
 public class PSAlgorithms implements PSAlgorithmsInterface {
+
+    static int CONVOLUTION_RADIUS =1; //卷积半径
 
     public GImage rotateCounterclockwise(GImage source) {
         /************************************************
@@ -129,9 +132,23 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newpixelArrary);
     }
 
-    private int getAverageRGB(int[][] pixelArrary, int x, int y) {
-        int[] xArrary = {x, x + 1, x - 1};
-        int[] yArrary = {y, y + 1, y - 1};
+    private int getAverageRGB(int[][] pixelArrary, int x, int y) {  //取卷积半径内RGB平均值
+        int[] xArrary = new int[(1+2*CONVOLUTION_RADIUS)];
+        int[] yArrary = new int[(1+2*CONVOLUTION_RADIUS)];
+        xArrary[0] = x;
+        yArrary[0] = y;
+        int num =CONVOLUTION_RADIUS;
+        for (int i = 1; i <= xArrary.length-2; i+=2) {
+            xArrary[i] = x+num;
+            xArrary[i+1] = x-num;
+            num --;
+        }
+        int num2 =CONVOLUTION_RADIUS;
+        for (int i = 1; i <= yArrary.length-2; i+=2) {
+            yArrary[i] = y+1;
+            yArrary[i+1] = y-1;
+            num2--;
+        }
         java.util.List<Integer> r = new ArrayList<>();
         java.util.List<Integer> g = new ArrayList<>();
         java.util.List<Integer> b = new ArrayList<>();
