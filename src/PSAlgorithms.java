@@ -126,7 +126,6 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         java.util.List<Integer> b = new ArrayList<>();
         for (int x_ : xArrary) {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
-                System.out.println(x_);
                 for (int y_ : yArrary) {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
                         r.add(GImage.getRed(pixelArrary[y_][x_]));
