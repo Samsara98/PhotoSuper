@@ -222,14 +222,18 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] pixelArray = source.getPixelArray(); //旧图片的像素数组
         int Width = pixelArray[0].length;
         int Height = pixelArray.length;
-        int[][] newPixelArray = new int[Height][Width];  //新图片的像素数组
+
+        //int[][] newPixelArray = new int[Height][Width];  //新图片的像素数组
+
         int[] pixelLuminosity = new int[256];  //保存某亮度像素数量的数组，
+
         for (int[] ints : pixelArray) {  //获取全像素亮度
             for (int x = 0; x < Width; x++) {
                 int Luminosity = getLuminosity(ints[x]);
                 pixelLuminosity[Luminosity] += 1;
             }
         }
+
         for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
             for (int x_ = 0; x_ < Width; x_++) {
                 int Luminosity = getLuminosity(pixelArray[y_][x_]);
@@ -243,11 +247,11 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                     size+=pixelLuminosity[i];
                 }
                 int rgb=256*size/(Height*Width);
-                newPixelArray[y_][x_] = GImage.createRGBPixel(rgb, rgb, rgb);
+                pixelArray[y_][x_] = GImage.createRGBPixel(rgb, rgb, rgb);
             }
         }
 
-        return new GImage(newPixelArray);
+        return new GImage(pixelArray);
     }
 
     private int getLuminosity(int pixel) {   //根据像素获取亮度
