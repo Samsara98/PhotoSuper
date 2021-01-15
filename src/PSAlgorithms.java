@@ -34,8 +34,32 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
     public GImage rotateClockwise(GImage source) {
-        // TODO
-        return null;
+        /************************************************
+         * 旋转前，旧图片的信息
+         ************************************************/
+        int[][] oldPixelArray = source.getPixelArray();     // 旧图片数组
+        int oldHeight = oldPixelArray.length;               // 旧图片高度
+        int oldWidth = oldPixelArray[0].length;             // 旧图片宽度
+
+        /************************************************
+         * 旋转前，旧图片的信息
+         ************************************************/
+        int newHeight = oldWidth;                               // 新图片高度等于旧图片宽度
+        int newWidth = oldHeight;                               // 新图片宽度等于旧图片高度
+        int[][] newPixelArray = new int[newHeight][newWidth];   // 为新图片新建一个数组，行数是newHeight，列数是newWidth
+
+        /************************************************
+         * 新旧数组的像素对应关系
+         ************************************************/
+        for (int yNew = 0; yNew < newHeight; yNew++) {
+            for (int xNew = 0; xNew < newWidth; xNew++) {
+                int yOld = oldHeight - xNew - 1;
+                int xOld = yNew;
+                newPixelArray[yNew][xNew] = oldPixelArray[yOld][xOld];
+            }
+        }
+
+        return new GImage(newPixelArray);
     }
 
     public GImage flipHorizontal(GImage source) {
