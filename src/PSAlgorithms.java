@@ -246,7 +246,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 for (int i = 0; i < Luminosity + 1; i++) {
                     size+=pixelLuminosity[i];
                 }
-                int rgb=256*size/(Height*Width);
+                int rgb=255*size/(Height*Width);
                 pixelArray[y_][x_] = GImage.createRGBPixel(rgb, rgb, rgb);
             }
         }
