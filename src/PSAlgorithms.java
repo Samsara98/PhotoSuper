@@ -99,7 +99,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 int r = GImage.getRed(pixel);
                 int g = GImage.getGreen(pixel);
                 int b = GImage.getBlue(pixel);
-                int newPixel = GImage.createRGBPixel(255 - r, 255 - b, 255 - g);
+                int newPixel = GImage.createRGBPixel(255 - r, 255 - g, 255 - b);
                 pixelArray[col][row] = newPixel;
             }
         }
