@@ -109,17 +109,15 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
     public GImage convolution(GImage source) {   //卷积算法
-        int[][] pixelArrary = source.getPixelArray();  //旧图像
-        int oldWidth = pixelArrary[0].length;
-        int oldHeight = pixelArrary.length;
-        int[][] newpixelArrary = new int[oldHeight][oldWidth];  //新图像
-
-        for (int newy = 0; newy < oldHeight; newy++) {
-            for (int newx = 0; newx < oldWidth; newx++) {
-                newpixelArrary[newy][newx] = getAverageRGB(pixelArrary, newx, newy);
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+        for (int newy = 0; newy < Height; newy++) {
+            for (int newx = 0; newx < Width; newx++) {
+                pixelArrary[newy][newx] = getAverageRGB(pixelArrary, newx, newy);
             }
         }
-        return new GImage(newpixelArrary);
+        return new GImage(pixelArrary);
     }
 
     private int getAverageRGB(int[][] pixelArrary, int x, int y) {  //取卷积半径内RGB平均值

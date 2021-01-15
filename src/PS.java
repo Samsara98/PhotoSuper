@@ -200,7 +200,7 @@ public class PS extends GraphicsProgram {
             remove(currentImage);
         }
 
-        setBackground(new Color(238, 238, 238));
+        setBackground(new Color(208, 188, 188));
         if (image != null) {
             setCanvasSize(image.getWidth(), image.getHeight());
             add(image);
