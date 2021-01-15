@@ -7,30 +7,29 @@ import java.util.ArrayList;
 
 public class PSAlgorithms implements PSAlgorithmsInterface {
 
-    static final int CONVOLUTION_RADIUS = 1; //卷积半径
+    static int CONVOLUTION_RADIUS = 1; //卷积半径
 
     public GImage rotateCounterclockwise(GImage source) {
         /************************************************
          * 旋转前，旧图片的信息
          ************************************************/
         int[][] oldPixelArray = source.getPixelArray();     // 旧图片数组
-        int oldHeight = oldPixelArray.length;               // 旧图片高度
-        int oldWidth = oldPixelArray[0].length;             // 旧图片宽度
+        int Height = oldPixelArray.length;               // 图片高度
+        int Width = oldPixelArray[0].length;             // 图片宽度
 
         /************************************************
          * 旋转前，旧图片的信息
          ************************************************/
-        int newHeight = oldWidth;                               // 新图片高度等于旧图片宽度
-        int newWidth = oldHeight;                               // 新图片宽度等于旧图片高度
-        int[][] newPixelArray = new int[newHeight][newWidth];   // 为新图片新建一个数组，行数是newHeight，列数是newWidth
+                             // 新图片宽度等于旧图片高度
+        int[][] newPixelArray = new int[Height][Width];   // 为新图片新建一个数组，行数是newHeight，列数是newWidth
 
         /************************************************
          * 新旧数组的像素对应关系
          ************************************************/
-        for (int yNew = 0; yNew < newHeight; yNew++) {
-            for (int xNew = 0; xNew < newWidth; xNew++) {
+        for (int yNew = 0; yNew < Height; yNew++) {
+            for (int xNew = 0; xNew < Width; xNew++) {
                 int yOld = xNew;
-                int xOld = oldWidth - yNew - 1;
+                int xOld = Width - yNew - 1;
                 newPixelArray[yNew][xNew] = oldPixelArray[yOld][xOld];
             }
         }
@@ -155,13 +154,13 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return GImage.createRGBPixel(aver_r, aver_g, aver_b);
     }
 
-    private int getAver(java.util.List<Integer> r) {
+    private int getAver(java.util.List<Integer> r) {  //取List平均值
         Integer sum = sum(r);
         int aver = sum / r.size();
         return aver;
     }
 
-    private int[] getArrary(int x) {
+    private int[] getArrary(int x) {  //获得像素卷积半径内的像素坐标
         int[] xArrary = new int[(1 + 2 * CONVOLUTION_RADIUS)];
         xArrary[0] = x;
         int num = CONVOLUTION_RADIUS;
@@ -174,7 +173,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
 
-    private Integer sum(java.util.List<Integer> r) {
+    private Integer sum(java.util.List<Integer> r) {  //求List和
         int sum = 0;
         for (int i = 0; i < r.size(); i++) {
             sum += r.get(i);
