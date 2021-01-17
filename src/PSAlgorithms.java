@@ -269,7 +269,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
         int[][] newPixelArrary = pixelArrary;
-        for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + 1) {
+        for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + 1) {  //按马赛克半径内的点形成的方块处理
             for (int x = 0; x < Width; x += 2 * MOSAIC_RADIUS + 1) {
                 newPixelArrary = mosaicPixel(newPixelArrary, x, y);
             }
@@ -277,7 +277,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
-    private int[][] mosaicPixel(int[][] pixelArrary, int x, int y) {
+    private int[][] mosaicPixel(int[][] pixelArrary, int x, int y) {  //用马赛克半径内随机的一个点替换半径内全部的点
         int[] xArrary = getArrary(x, MOSAIC_RADIUS);
         int[] yArrary = getArrary(y, MOSAIC_RADIUS);
         java.util.List<Integer> pixel = new ArrayList<>();
@@ -304,12 +304,12 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return pixelArrary;
     }
 
-    public GImage saturationEnhancement(GImage source) {   //对比度增强算法
+    public GImage saturationEnhancement(GImage source) {   //饱和度增强算法
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
 //        int[][] newPixelArrary = new int[Height][Width];
-        for (int y = 0; y < Height; y++) {
+        for (int y = 0; y < Height; y++) {   //每个像素的rgb值根据rgb平均值调整
             for (int x = 0; x < Width; x++) {
                 int r = GImage.getRed(pixelArrary[y][x]);
                 int g = GImage.getGreen(pixelArrary[y][x]);
