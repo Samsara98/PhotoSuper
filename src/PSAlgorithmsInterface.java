@@ -4,7 +4,8 @@ import acm.graphics.GMath;
 public interface PSAlgorithmsInterface {
 
 	public static final int CONVOLUTION_RADIUS = 1;
-	
+	public static final int MOSAIC_RADIUS = 1;
+	public static final double SATURATION = 0.8;
 	public GImage flipHorizontal(GImage source);
 	public GImage rotateCounterclockwise(GImage source);
 	public GImage rotateClockwise(GImage source);

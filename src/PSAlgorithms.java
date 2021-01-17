@@ -1,4 +1,5 @@
 import acm.graphics.*;
+import acm.util.RandomGenerator;
 
 import java.util.ArrayList;
 
@@ -136,15 +137,15 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] newPixelArrary = new int[Height][Width];
         for (int newy = 0; newy < Height; newy++) {
             for (int newx = 0; newx < Width; newx++) {
-                newPixelArrary[newy][newx] = getAverageRGB(pixelArrary, newx, newy);
+                int[] rgb = getAverageRGB(pixelArrary, newx, newy);
             }
         }
         return new GImage(newPixelArrary);
     }
 
-    private int getAverageRGB(int[][] pixelArrary, int x, int y) {  //取卷积半径内RGB平均值
-        int[] xArrary = getArrary(x);
-        int[] yArrary = getArrary(y);
+    private int[] getAverageRGB(int[][] pixelArrary, int x, int y) {  //取卷积半径内RGB平均值
+        int[] xArrary = getArrary(x, CONVOLUTION_RADIUS);
+        int[] yArrary = getArrary(y, CONVOLUTION_RADIUS);
         java.util.List<Integer> r = new ArrayList<>();
         java.util.List<Integer> g = new ArrayList<>();
         java.util.List<Integer> b = new ArrayList<>();
@@ -162,7 +163,8 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int aver_r = getAver(r);
         int aver_g = getAver(g);
         int aver_b = getAver(b);
-        return GImage.createRGBPixel(aver_r, aver_g, aver_b);
+        int[] rgb = {aver_r, aver_g, aver_b};
+        return rgb;
     }
 
     private int getAver(java.util.List<Integer> r) {  //取List平均值
@@ -170,10 +172,10 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return sum / r.size();
     }
 
-    private int[] getArrary(int x) {  //获得像素卷积半径内的像素坐标
-        int[] xArrary = new int[(1 + 2 * CONVOLUTION_RADIUS)];
+    private int[] getArrary(int x, int RADIUS) {  //获得像素卷积半径内的像素坐标
+        int[] xArrary = new int[(1 + 2 * RADIUS)];
         xArrary[0] = x;
-        int num = CONVOLUTION_RADIUS;
+        int num = RADIUS;
         for (int i = 1; i <= xArrary.length - 2; i += 2) {
             xArrary[i] = x + num;
             xArrary[i + 1] = x - num;
@@ -242,11 +244,11 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                     sum += pixelLuminosity[i];
                 }*/
                 //int rgb = 255 * ((Height * Width) - sum) / (Height * Width);
-                int size=0;
+                int size = 0;
                 for (int i = 0; i < Luminosity + 1; i++) {
-                    size+=pixelLuminosity[i];
+                    size += pixelLuminosity[i];
                 }
-                int rgb=255*size/(Height*Width);
+                int rgb = 255 * size / (Height * Width);
                 pixelArray[y_][x_] = GImage.createRGBPixel(rgb, rgb, rgb);
             }
         }
@@ -260,4 +262,73 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int b = GImage.getBlue(pixel);
         return computeLuminosity(r, g, b);
     }
+
+
+    public GImage mosaic(GImage source) {   // 马赛克算法
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+        int[][] newPixelArrary = pixelArrary;
+        for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + 1) {
+            for (int x = 0; x < Width; x += 2 * MOSAIC_RADIUS + 1) {
+                newPixelArrary = mosaicPixel(newPixelArrary, x, y);
+            }
+        }
+        return new GImage(newPixelArrary);
+    }
+
+    private int[][] mosaicPixel(int[][] pixelArrary, int x, int y) {
+        int[] xArrary = getArrary(x, MOSAIC_RADIUS);
+        int[] yArrary = getArrary(y, MOSAIC_RADIUS);
+        java.util.List<Integer> pixel = new ArrayList<>();
+        RandomGenerator randomGenerator = new RandomGenerator();
+        for (int x_ : xArrary) {
+            if (x_ >= 0 && x_ < pixelArrary[0].length) {
+                for (int y_ : yArrary) {
+                    if (y_ >= 0 && y_ < pixelArrary.length) {
+                        pixel.add(pixelArrary[y_][x_]);
+                    }
+                }
+            }
+        }
+        int randomNum = randomGenerator.nextChoice(pixel);
+        for (int x_ : xArrary) {
+            if (x_ >= 0 && x_ < pixelArrary[0].length) {
+                for (int y_ : yArrary) {
+                    if (y_ >= 0 && y_ < pixelArrary.length) {
+                        pixelArrary[y_][x_] = randomNum;
+                    }
+                }
+            }
+        }
+        return pixelArrary;
+    }
+
+    public GImage saturationEnhancement(GImage source) {   //对比度增强算法
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+//        int[][] newPixelArrary = new int[Height][Width];
+        for (int y = 0; y < Height; y++) {
+            for (int x = 0; x < Width; x++) {
+                int r = GImage.getRed(pixelArrary[y][x]);
+                int g = GImage.getGreen(pixelArrary[y][x]);
+                int b = GImage.getBlue(pixelArrary[y][x]);
+                int[] rgb = {r, g, b};
+                int aver = (r + g + b)/3;
+                for (int i = 0; i < 3; i++) {
+                    rgb[i] += (rgb[i]-aver)*SATURATION;
+                    rgb[i] = (rgb[i]<0)?0:rgb[i];
+                    rgb[i] = (rgb[i]>255)?255:rgb[i];
+                }
+                pixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+        return new GImage(pixelArrary);
+    }
+
+
+
 }
+
+

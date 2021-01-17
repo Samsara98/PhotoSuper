@@ -63,6 +63,8 @@ public class PS extends GraphicsProgram {
         add(new JButton("卷积"), WEST);
         add(new JButton("裁剪"), WEST);
         add(new JButton("均衡化"), WEST);
+        add(new JButton("马赛克"), EAST);
+        add(new JButton("对比度增强"), EAST);
 
         // NORTH是窗口上部
         infoLabel = new JLabel("槑图秀秀");
@@ -123,6 +125,14 @@ public class PS extends GraphicsProgram {
             infoLabel.setText(command + "已生效。");
         } else if (command.equals("均衡化")) {
             GImage newImage = algorithms.equalization(currentImage);
+            setImage(newImage);
+            infoLabel.setText(command + "已生效。");
+        } else if (command.equals("马赛克")) {
+            GImage newImage = algorithms.mosaic(currentImage);
+            setImage(newImage);
+            infoLabel.setText(command + "已生效。");
+        }else if (command.equals("对比度增强")) {
+            GImage newImage = algorithms.saturationEnhancement(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
         } else {
