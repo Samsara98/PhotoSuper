@@ -478,6 +478,36 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
+
+    public GImage clean(GImage source, int x, int y){
+        int [][] pixelArrary = source.getPixelArray();
+        int[] selectAreaX = getSlectArrary(x, SELECTRADIUS);
+        int[] selectAreaY = getSlectArrary(y, SELECTRADIUS);
+        for (int x_ : selectAreaX) {
+            if (x_ >= 0 && x_ < pixelArrary[0].length) {
+                for (int y_ : selectAreaY) {
+                    if (y_ >= 0 && y_ < pixelArrary.length) {
+                        int pixel = GImage.createRGBPixel(255,255,255);
+                        pixelArrary[y_][x_] = pixel;
+                    }
+                }
+            }
+        }
+        return new GImage(pixelArrary);
+    }
+
+    private int[] getSlectArrary(int x, int RADIUS) {  //获得半径内的像素坐标
+        int[] xArrary = new int[(1 + 2 * RADIUS)];
+        xArrary[0] = x;
+        int num = RADIUS;
+        for (int i = 1; i <= xArrary.length - 2; i += 2) {
+            xArrary[i] = x + num;
+            xArrary[i + 1] = x - num;
+            num--;
+        }
+        return xArrary;
+    }
+
 }
 
 

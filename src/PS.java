@@ -31,6 +31,11 @@ public class PS extends GraphicsProgram {
     // 当前显示的图像，如果无图像则为null
     private GImage currentImage;
 
+    //橡皮擦是否打开
+    private boolean cleanSwitch = false;
+
+    File CURRENTFILE;
+
     // 图像算法
     private PSAlgorithms algorithms;
 
@@ -63,6 +68,7 @@ public class PS extends GraphicsProgram {
         add(new JButton("卷积"), WEST);
         add(new JButton("裁剪"), WEST);
         add(new JButton("均衡化"), WEST);
+        add(new JButton("初始化"), EAST);
         add(new JButton("马赛克"), EAST);
         add(new JButton("饱和度增强"), EAST);
         add(new JButton("灰度图"), EAST);
@@ -70,6 +76,7 @@ public class PS extends GraphicsProgram {
         add(new JButton("对比度增强"), EAST);
         add(new JButton("毛玻璃"), EAST);
         add(new JButton("ZIP"), EAST);
+        add(new JButton("橡皮擦"), EAST);
 
 
         // NORTH是窗口上部
@@ -161,6 +168,10 @@ public class PS extends GraphicsProgram {
             GImage newImage = algorithms.zip(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
+        }else if (command.equals("橡皮擦")) {
+            cleanSwitch = !cleanSwitch;
+        }else if (command.equals("初始化")) {
+            initImage();
         }else {
             infoLabel.setText("未知命令： " + command + "");
         }
@@ -197,10 +208,15 @@ public class PS extends GraphicsProgram {
     // 当鼠标按下时，自动调用这个函数
     public void mousePressed(MouseEvent e) {
         deselect();
-        if (selectedArea == null) {
+
+        if (cleanSwitch == true){
+            int x = e.getX();
+            int y = e.getY();
+            GImage newImage = algorithms.clean(currentImage, x, y);
+            setImage(newImage);
+        }else if (selectedArea == null) {
             fixedX = e.getX();
             fixedY = e.getY();
-
             selectedArea = new GRect(fixedX, fixedY, 0, 0);
             selectedArea.setColor(Color.RED);
             add(selectedArea);
@@ -213,7 +229,10 @@ public class PS extends GraphicsProgram {
         int x = e.getX();
         int y = e.getY();
 
-        if (currentImage != null && x <= currentImage.getWidth() && y <= currentImage.getHeight()) {
+        if (cleanSwitch == true){
+            GImage newImage = algorithms.clean(currentImage, x, y);
+            setImage(newImage);
+        } else if (currentImage != null && x <= currentImage.getWidth() && y <= currentImage.getHeight()) {
             double newX = Math.min(fixedX, x);
             double newY = Math.min(fixedY, y);
 
@@ -270,6 +289,19 @@ public class PS extends GraphicsProgram {
         return dir;
     }
 
+
+    // 重置图片
+    private void initImage() {
+        // Init the image and add it to the canvas
+        if (null != CURRENTFILE){
+            File currentFile = CURRENTFILE;
+            GImage image = new GImage(currentFile.getAbsolutePath());
+            setImage(image);
+            infoLabel.setText("图片" + currentFile.getName() + "已初始化。");
+        }
+    }
+
+
     // 打开图像
     private void loadImage() {
         // Initialize the file chooser prompt
@@ -280,6 +312,7 @@ public class PS extends GraphicsProgram {
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             // Load the image and add it to the canvas
             File currentFile = chooser.getSelectedFile();
+            CURRENTFILE = currentFile;
             GImage image = new GImage(currentFile.getAbsolutePath());
             setImage(image);
             infoLabel.setText("图片" + currentFile.getName() + "已打开。");
