@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 
 public class PSAlgorithms implements PSAlgorithmsInterface {
+    RandomGenerator randomGenerator = new RandomGenerator();
+
     public GImage rotateCounterclockwise(GImage source) {
         /************************************************
          * 旋转前，旧图片的信息
@@ -138,6 +140,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         for (int newy = 0; newy < Height; newy++) {
             for (int newx = 0; newx < Width; newx++) {
                 int[] rgb = getAverageRGB(pixelArrary, newx, newy);
+                newPixelArrary[newy][newx] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
             }
         }
         return new GImage(newPixelArrary);
@@ -327,7 +330,153 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArrary);
     }
 
+    public GImage grey(GImage source) {   //黑白算法
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+//        int[][] newPixelArrary = new int[Height][Width];
+        for (int newy = 0; newy < Height; newy++) {
+            for (int newx = 0; newx < Width; newx++) {
+                int luminosity = getLuminosity(pixelArrary[newy][newx]);
+                pixelArrary[newy][newx] = GImage.createRGBPixel(luminosity, luminosity, luminosity);
 
+            }
+        }
+        return new GImage(pixelArrary);
+    }
+
+    public GImage colorConditioning(GImage source) {   //色调改变算法
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+//        int[][] newPixelArrary = new int[Height][Width];
+        for (int y = 0; y < Height; y++) {   //每个像素的rgb值根据rgb平均值调整
+            for (int x = 0; x < Width; x++) {
+                int r = GImage.getRed(pixelArrary[y][x]);
+                int g = GImage.getGreen(pixelArrary[y][x]);
+                int b = GImage.getBlue(pixelArrary[y][x]);
+                int[] rgb = {r, g, b};
+                int aver = (r + g + b)/3;
+                rgb[0] -= Math.abs(rgb[0] - aver)*0.8;
+                rgb[1] += Math.abs(rgb[1] - aver)*0.2;
+                rgb[2] += Math.abs(rgb[2] - aver);
+                for (int j = 0; j < 3; j++) {
+                    rgb[j] = Math.max(rgb[j], 0);
+                    rgb[j] = Math.min(rgb[j], 255);
+                }
+                pixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+        return new GImage(pixelArrary);
+    }
+
+    public GImage contrastEnhancement(GImage source) {   //对比度增强算法
+        int[][] pixelArray = source.getPixelArray(); //旧图片的像素数组
+        int Width = pixelArray[0].length;
+        int Height = pixelArray.length;
+
+        //int[][] newPixelArray = new int[Height][Width];  //新图片的像素数组
+
+        int[] pixelLuminosity = new int[256];  //保存某亮度像素数量的数组，
+
+        for (int[] ints : pixelArray) {  //获取全像素亮度
+            for (int x = 0; x < Width; x++) {
+                int Luminosity = getLuminosity(ints[x]);
+                pixelLuminosity[Luminosity] += 1;
+            }
+        }
+        int sumLu = 0;
+        for(int i = 0; i <256; i++){
+            sumLu += i*pixelLuminosity[i];
+        }
+        int averLu = sumLu/(Height*Width);
+
+        for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
+            for (int x_ = 0; x_ < Width; x_++) {
+                int Luminosity = getLuminosity(pixelArray[y_][x_]);
+                int r = GImage.getRed(pixelArray[y_][x_]);
+                int g = GImage.getGreen(pixelArray[y_][x_]);
+                int b = GImage.getBlue(pixelArray[y_][x_]);
+                r += (Luminosity - averLu)*0.6;
+                g += (Luminosity - averLu)*0.6;
+                b += (Luminosity - averLu)*0.6;
+                int [] rgb = {r, g, b};
+                for (int j = 0; j < 3; j++) {
+                    rgb[j] = Math.max(rgb[j], 0);
+                    rgb[j] = Math.min(rgb[j], 255);
+                }
+                pixelArray[y_][x_] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+
+        return new GImage(pixelArray);
+    }
+
+    public GImage groundGlass(GImage source) {   // 毛玻璃算法
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+        int[][] newPixelArrary = pixelArrary;
+        for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + 1) {  //按毛玻璃半径内的点形成的方块处理
+            for (int x = 0; x < Width; x += 2 * MOSAIC_RADIUS + 1) {
+                newPixelArrary = groundGlassPixel(newPixelArrary, x, y);
+            }
+        }
+        return new GImage(newPixelArrary);
+    }
+
+    private int[][] groundGlassPixel(int[][] pixelArrary, int x, int y) {  //用毛玻璃半径内随机的一个点替换当前点
+        int[] xArrary = getArrary(x, MOSAIC_RADIUS);
+        int[] yArrary = getArrary(y, MOSAIC_RADIUS);
+        java.util.List<Integer> pixel = new ArrayList<>();
+        for (int x_ : xArrary) {
+            if (x_ >= 0 && x_ < pixelArrary[0].length) {
+                for (int y_ : yArrary) {
+                    if (y_ >= 0 && y_ < pixelArrary.length) {
+                        pixel.add(pixelArrary[y_][x_]);
+                    }
+                }
+            }
+        }
+        for (int x_ : xArrary) {
+            if (x_ >= 0 && x_ < pixelArrary[0].length) {
+                for (int y_ : yArrary) {
+                    if (y_ >= 0 && y_ < pixelArrary.length) {
+                        int randomNum = randomGenerator.nextChoice(pixel);
+                        pixelArrary[y_][x_] = randomNum;
+                    }
+                }
+            }
+        }
+        return pixelArrary;
+    }
+
+    public GImage zip(GImage source) {   // 压缩算法
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+        int[][] newPixelArrary = new int[(Height+1)/ZIPRADIO][(Width+1)/ZIPRADIO];
+        for (int y = 0; y < Height; y += 1) {  //
+            for (int i = 1; i < (Width+1)/ZIPRADIO; i+=1) {
+                pixelArrary[y][i] = pixelArrary[y][ZIPRADIO*i];
+            }
+        }
+
+        for (int x = 0; x < Width; x += 1) {  //
+            for (int i = 1; i < (Height+1)/ZIPRADIO; i+=1) {
+                pixelArrary[i][x] = pixelArrary[ZIPRADIO*i][x];
+            }
+        }
+
+        for (int y = 0; y < (Height+1)/ZIPRADIO; y += 1 ){  //
+            for (int x = 0; x < (Width+1)/ZIPRADIO; x += 1) {
+                newPixelArrary[y][x] = pixelArrary[y][x];
+            }
+        }
+
+
+        return new GImage(newPixelArrary);
+    }
 
 }
 
