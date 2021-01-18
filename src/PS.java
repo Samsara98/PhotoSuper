@@ -76,6 +76,7 @@ public class PS extends GraphicsProgram {
         add(new JButton("对比度增强"), EAST);
         add(new JButton("毛玻璃"), EAST);
         add(new JButton("ZIP"), EAST);
+        add(new JButton("放大"), EAST);
         add(new JButton("橡皮擦"), EAST);
 
 
@@ -168,8 +169,17 @@ public class PS extends GraphicsProgram {
             GImage newImage = algorithms.zip(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
+        }else if (command.equals("放大")) {
+            GImage newImage = algorithms.extend(currentImage);
+            setImage(newImage);
+            infoLabel.setText(command + "已生效。");
         }else if (command.equals("橡皮擦")) {
             cleanSwitch = !cleanSwitch;
+            if(cleanSwitch == true){
+            infoLabel.setText(command + "已生效。");
+            }else{
+                infoLabel.setText(command + "已关闭。");
+            }
         }else if (command.equals("初始化")) {
             initImage();
         }else {

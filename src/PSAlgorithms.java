@@ -156,9 +156,11 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
                 for (int y_ : yArrary) {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
-                        r.add(GImage.getRed(pixelArrary[y_][x_]));
-                        g.add(GImage.getGreen(pixelArrary[y_][x_]));
-                        b.add(GImage.getBlue(pixelArrary[y_][x_]));
+                        if (GImage.getAlpha(pixelArrary[y_][x_])!=0){
+                            r.add(GImage.getRed(pixelArrary[y_][x_]));
+                            g.add(GImage.getGreen(pixelArrary[y_][x_]));
+                            b.add(GImage.getBlue(pixelArrary[y_][x_]));
+                        }
                     }
                 }
             }
@@ -478,6 +480,45 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
+    public GImage extend(GImage source) {   // 放大算法
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+        int[][] newPixelArrary = new int[Height*ZIPRADIO][Width*ZIPRADIO];
+        int[][] newPixelArrary2 = new int[Height*ZIPRADIO][Width*ZIPRADIO];
+        int zero = GImage.createRGBPixel(0,0,0,0);
+        for (int y = 0; y < Height; y += 1) {  //
+            for (int i = 0; i < Width; i+=1) {
+                newPixelArrary[y][i*ZIPRADIO] = pixelArrary[y][i];
+                newPixelArrary[y][i*ZIPRADIO+1] = zero;
+            }
+        }
+        for (int x = 0; x < Width*ZIPRADIO; x += 2) {  //
+            for (int i = 0; i < Height; i+=1) {
+                newPixelArrary2[i*ZIPRADIO][x] = newPixelArrary[i][x];
+            }
+        }
+        for (int y =1; y<Height*ZIPRADIO;y+=2){
+            for (int x_ =0; x_<Width*ZIPRADIO;x_++){
+                newPixelArrary2[y][x_] = zero;
+            }
+        }
+        newPixelArrary =newPixelArrary2;
+        for (int y = 1; y < Height*ZIPRADIO; y += 2) {  //
+            for (int x = 0; x< Width*ZIPRADIO; x+=1) {
+                int[] rgb = getAverageRGB(newPixelArrary2, x, y);
+                newPixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+        for (int x2 = 1; x2 < Width*ZIPRADIO; x2 += 2) {  //
+            for (int y2 = 0; y2< Height*ZIPRADIO; y2+=2) {
+                int[] rgb = getAverageRGB(newPixelArrary2, x2, y2);
+                newPixelArrary[y2][x2] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+
+        return new GImage(newPixelArrary);
+    }
 
     public GImage clean(GImage source, int x, int y){
         int [][] pixelArrary = source.getPixelArray();
@@ -507,6 +548,9 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return xArrary;
     }
+
+
+
 
 }
 
