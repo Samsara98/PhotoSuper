@@ -7,6 +7,7 @@ import adalab.core.gui.GuiUtils;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Locale;
 
 import javax.imageio.*;
 import javax.swing.*;
@@ -44,7 +45,17 @@ public class PS extends GraphicsProgram {
     private double fixedX;
     private double fixedY;
 
+    //美颜面板是否打开
+    private boolean beautifyPanel;
+    JComboBox type;
+    JPanel jp = new JPanel();
+    JButton btn = new JButton("OK");
+
     public void init() {
+        String[] types = {"tea_time", "wangjiawei", "sakura","17_years_old", "chaplin",
+                "jiang_nan", "lavender", "paris", "story", "chanel", "prague", "old_dream"};
+        type = new JComboBox(types);
+
         addButtons();
         addActionListeners();
         setTitle("ImageShop");
@@ -70,18 +81,19 @@ public class PS extends GraphicsProgram {
         add(new JButton("均衡化"), WEST);
         add(new JButton("初始化"), EAST);
         add(new JButton("马赛克"), EAST);
+        add(new JButton("毛玻璃"), EAST);
         add(new JButton("饱和度增强"), EAST);
         add(new JButton("灰度图"), EAST);
         add(new JButton("色调调整(冷)"), EAST);
         add(new JButton("对比度增强"), EAST);
-        add(new JButton("毛玻璃"), EAST);
         add(new JButton("ZIP"), EAST);
         add(new JButton("放大"), EAST);
         add(new JButton("橡皮擦"), EAST);
+        add(new JButton("美颜"), EAST);
 
 
         // NORTH是窗口上部
-        infoLabel = new JLabel("槑图秀秀");
+        infoLabel = new JLabel("SamsarA's PS");
         add(infoLabel, NORTH);
 
         // SOUTH是窗口下部
@@ -91,6 +103,7 @@ public class PS extends GraphicsProgram {
 
     // 当有按钮被按下时，自动调用这个函数
     public void actionPerformed(ActionEvent e) {
+
         String command = e.getActionCommand();
         if (command.equals("打开图片")) {
             loadImage();
@@ -157,32 +170,47 @@ public class PS extends GraphicsProgram {
             GImage newImage = algorithms.colorConditioning(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
-        }else if (command.equals("对比度增强")) {
+        } else if (command.equals("对比度增强")) {
             GImage newImage = algorithms.contrastEnhancement(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
-        }else if (command.equals("毛玻璃")) {
+        } else if (command.equals("毛玻璃")) {
             GImage newImage = algorithms.groundGlass(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
-        }else if (command.equals("ZIP")) {
+        } else if (command.equals("ZIP")) {
             GImage newImage = algorithms.zip(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
-        }else if (command.equals("放大")) {
+        } else if (command.equals("放大")) {
             GImage newImage = algorithms.extend(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
-        }else if (command.equals("橡皮擦")) {
-            cleanSwitch = !cleanSwitch;
-            if(cleanSwitch == true){
+        } else if (command.equals("美颜")) {
+            if (!beautifyPanel) {
+                add(jp, EAST);
+                jp.add(type, EAST);
+                jp.add(btn, EAST);
+                btn.addActionListener(this);
+                beautifyPanel = true;
+            }
+        } else if (command.equals("OK")) {
+            String filterType = (String) type.getSelectedItem();
+            currentImage.saveImage("./res/0.jpg");
+            File file = new File("./res/0.jpg");
+            GImage newImage = algorithms.beautify(file, 100, 100, filterType);
+            setImage(newImage);
             infoLabel.setText(command + "已生效。");
-            }else{
+        } else if (command.equals("橡皮擦")) {
+            cleanSwitch = !cleanSwitch;
+            if (cleanSwitch == true) {
+                infoLabel.setText(command + "已生效。");
+            } else {
                 infoLabel.setText(command + "已关闭。");
             }
-        }else if (command.equals("初始化")) {
+        } else if (command.equals("初始化")) {
             initImage();
-        }else {
+        } else {
             infoLabel.setText("未知命令： " + command + "");
         }
         deselect();
@@ -219,12 +247,12 @@ public class PS extends GraphicsProgram {
     public void mousePressed(MouseEvent e) {
         deselect();
 
-        if (cleanSwitch == true){
+        if (cleanSwitch == true) {
             int x = e.getX();
             int y = e.getY();
             GImage newImage = algorithms.clean(currentImage, x, y);
             setImage(newImage);
-        }else if (selectedArea == null) {
+        } else if (selectedArea == null) {
             fixedX = e.getX();
             fixedY = e.getY();
             selectedArea = new GRect(fixedX, fixedY, 0, 0);
@@ -239,7 +267,7 @@ public class PS extends GraphicsProgram {
         int x = e.getX();
         int y = e.getY();
 
-        if (cleanSwitch == true){
+        if (cleanSwitch == true) {
             GImage newImage = algorithms.clean(currentImage, x, y);
             setImage(newImage);
         } else if (currentImage != null && x <= currentImage.getWidth() && y <= currentImage.getHeight()) {
@@ -303,7 +331,7 @@ public class PS extends GraphicsProgram {
     // 重置图片
     private void initImage() {
         // Init the image and add it to the canvas
-        if (null != CURRENTFILE){
+        if (null != CURRENTFILE) {
             File currentFile = CURRENTFILE;
             GImage image = new GImage(currentFile.getAbsolutePath());
             setImage(image);

@@ -1,11 +1,17 @@
 import acm.graphics.*;
 import acm.util.RandomGenerator;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Map;
 
 
 public class PSAlgorithms implements PSAlgorithmsInterface {
     RandomGenerator randomGenerator = new RandomGenerator();
+
 
     public GImage rotateCounterclockwise(GImage source) {
         /************************************************
@@ -156,7 +162,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
                 for (int y_ : yArrary) {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
-                        if (GImage.getAlpha(pixelArrary[y_][x_])!=0){
+                        if (GImage.getAlpha(pixelArrary[y_][x_]) != 0) {
                             r.add(GImage.getRed(pixelArrary[y_][x_]));
                             g.add(GImage.getGreen(pixelArrary[y_][x_]));
                             b.add(GImage.getBlue(pixelArrary[y_][x_]));
@@ -273,13 +279,12 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
-        int[][] newPixelArrary = pixelArrary;
         for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + 1) {  //按马赛克半径内的点形成的方块处理
             for (int x = 0; x < Width; x += 2 * MOSAIC_RADIUS + 1) {
-                newPixelArrary = mosaicPixel(newPixelArrary, x, y);
+                pixelArrary = mosaicPixel(pixelArrary, x, y);
             }
         }
-        return new GImage(newPixelArrary);
+        return new GImage(pixelArrary);
     }
 
     private int[][] mosaicPixel(int[][] pixelArrary, int x, int y) {  //用马赛克半径内随机的一个点替换半径内全部的点
@@ -320,11 +325,11 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 int g = GImage.getGreen(pixelArrary[y][x]);
                 int b = GImage.getBlue(pixelArrary[y][x]);
                 int[] rgb = {r, g, b};
-                int aver = (r + g + b)/3;
+                int aver = (r + g + b) / 3;
                 for (int i = 0; i < 3; i++) {
-                    rgb[i] += (rgb[i]-aver)*SATURATION;
-                    rgb[i] = (rgb[i]<0)?0:rgb[i];
-                    rgb[i] = (rgb[i]>255)?255:rgb[i];
+                    rgb[i] += (rgb[i] - aver) * SATURATION;
+                    rgb[i] = (rgb[i] < 0) ? 0 : rgb[i];
+                    rgb[i] = (rgb[i] > 255) ? 255 : rgb[i];
                 }
                 pixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
             }
@@ -358,9 +363,9 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 int g = GImage.getGreen(pixelArrary[y][x]);
                 int b = GImage.getBlue(pixelArrary[y][x]);
                 int[] rgb = {r, g, b};
-                int aver = (r + g + b)/3;
-                rgb[0] -= Math.abs(rgb[0] - aver)*0.8;
-                rgb[1] += Math.abs(rgb[1] - aver)*0.2;
+                int aver = (r + g + b) / 3;
+                rgb[0] -= Math.abs(rgb[0] - aver) * 0.8;
+                rgb[1] += Math.abs(rgb[1] - aver) * 0.2;
                 rgb[2] += Math.abs(rgb[2] - aver);
                 for (int j = 0; j < 3; j++) {
                     rgb[j] = Math.max(rgb[j], 0);
@@ -388,10 +393,10 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
             }
         }
         int sumLu = 0;
-        for(int i = 0; i <256; i++){
-            sumLu += i*pixelLuminosity[i];
+        for (int i = 0; i < 256; i++) {
+            sumLu += i * pixelLuminosity[i];
         }
-        int averLu = sumLu/(Height*Width);
+        int averLu = sumLu / (Height * Width);
 
         for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
             for (int x_ = 0; x_ < Width; x_++) {
@@ -399,10 +404,10 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 int r = GImage.getRed(pixelArray[y_][x_]);
                 int g = GImage.getGreen(pixelArray[y_][x_]);
                 int b = GImage.getBlue(pixelArray[y_][x_]);
-                r += (Luminosity - averLu)*0.6;
-                g += (Luminosity - averLu)*0.6;
-                b += (Luminosity - averLu)*0.6;
-                int [] rgb = {r, g, b};
+                r += (Luminosity - averLu) * 0.6;
+                g += (Luminosity - averLu) * 0.6;
+                b += (Luminosity - averLu) * 0.6;
+                int[] rgb = {r, g, b};
                 for (int j = 0; j < 3; j++) {
                     rgb[j] = Math.max(rgb[j], 0);
                     rgb[j] = Math.min(rgb[j], 255);
@@ -457,21 +462,21 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
-        int[][] newPixelArrary = new int[(Height+1)/ZIPRADIO][(Width+1)/ZIPRADIO];
+        int[][] newPixelArrary = new int[(Height + 1) / ZIPRADIO][(Width + 1) / ZIPRADIO];
         for (int y = 0; y < Height; y += 1) {  //
-            for (int i = 1; i < (Width+1)/ZIPRADIO; i+=1) {
-                pixelArrary[y][i] = pixelArrary[y][ZIPRADIO*i];
+            for (int i = 1; i < (Width + 1) / ZIPRADIO; i += 1) {
+                pixelArrary[y][i] = pixelArrary[y][ZIPRADIO * i];
             }
         }
 
         for (int x = 0; x < Width; x += 1) {  //
-            for (int i = 1; i < (Height+1)/ZIPRADIO; i+=1) {
-                pixelArrary[i][x] = pixelArrary[ZIPRADIO*i][x];
+            for (int i = 1; i < (Height + 1) / ZIPRADIO; i += 1) {
+                pixelArrary[i][x] = pixelArrary[ZIPRADIO * i][x];
             }
         }
 
-        for (int y = 0; y < (Height+1)/ZIPRADIO; y += 1 ){  //
-            for (int x = 0; x < (Width+1)/ZIPRADIO; x += 1) {
+        for (int y = 0; y < (Height + 1) / ZIPRADIO; y += 1) {  //
+            for (int x = 0; x < (Width + 1) / ZIPRADIO; x += 1) {
                 newPixelArrary[y][x] = pixelArrary[y][x];
             }
         }
@@ -484,34 +489,34 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
-        int[][] newPixelArrary = new int[Height*ZIPRADIO][Width*ZIPRADIO];
-        int[][] newPixelArrary2 = new int[Height*ZIPRADIO][Width*ZIPRADIO];
-        int zero = GImage.createRGBPixel(0,0,0,0);
+        int[][] newPixelArrary = new int[Height * ZIPRADIO][Width * ZIPRADIO];
+        int[][] newPixelArrary2 = new int[Height * ZIPRADIO][Width * ZIPRADIO];
+        int zero = GImage.createRGBPixel(0, 0, 0, 0);
         for (int y = 0; y < Height; y += 1) {  //
-            for (int i = 0; i < Width; i+=1) {
-                newPixelArrary[y][i*ZIPRADIO] = pixelArrary[y][i];
-                newPixelArrary[y][i*ZIPRADIO+1] = zero;
+            for (int i = 0; i < Width; i += 1) {
+                newPixelArrary[y][i * ZIPRADIO] = pixelArrary[y][i];
+                newPixelArrary[y][i * ZIPRADIO + 1] = zero;
             }
         }
-        for (int x = 0; x < Width*ZIPRADIO; x += 2) {  //
-            for (int i = 0; i < Height; i+=1) {
-                newPixelArrary2[i*ZIPRADIO][x] = newPixelArrary[i][x];
+        for (int x = 0; x < Width * ZIPRADIO; x += 2) {  //
+            for (int i = 0; i < Height; i += 1) {
+                newPixelArrary2[i * ZIPRADIO][x] = newPixelArrary[i][x];
             }
         }
-        for (int y =1; y<Height*ZIPRADIO;y+=2){
-            for (int x_ =0; x_<Width*ZIPRADIO;x_++){
+        for (int y = 1; y < Height * ZIPRADIO; y += 2) {
+            for (int x_ = 0; x_ < Width * ZIPRADIO; x_++) {
                 newPixelArrary2[y][x_] = zero;
             }
         }
-        newPixelArrary =newPixelArrary2;
-        for (int y = 1; y < Height*ZIPRADIO; y += 2) {  //
-            for (int x = 0; x< Width*ZIPRADIO; x+=1) {
+        newPixelArrary = newPixelArrary2;
+        for (int y = 1; y < Height * ZIPRADIO; y += 2) {  //
+            for (int x = 0; x < Width * ZIPRADIO; x += 1) {
                 int[] rgb = getAverageRGB(newPixelArrary2, x, y);
                 newPixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
             }
         }
-        for (int x2 = 1; x2 < Width*ZIPRADIO; x2 += 2) {  //
-            for (int y2 = 0; y2< Height*ZIPRADIO; y2+=2) {
+        for (int x2 = 1; x2 < Width * ZIPRADIO; x2 += 2) {  //
+            for (int y2 = 0; y2 < Height * ZIPRADIO; y2 += 2) {
                 int[] rgb = getAverageRGB(newPixelArrary2, x2, y2);
                 newPixelArrary[y2][x2] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
             }
@@ -520,22 +525,35 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
-    public GImage clean(GImage source, int x, int y){
-        int [][] pixelArrary = source.getPixelArray();
+    public GImage clean(GImage source, int x, int y) {
+        int[][] pixelArrary = source.getPixelArray();
         int[] selectAreaX = getSlectArrary(x, SELECTRADIUS);
         int[] selectAreaY = getSlectArrary(y, SELECTRADIUS);
         for (int x_ : selectAreaX) {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
                 for (int y_ : selectAreaY) {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
-                        int pixel = GImage.createRGBPixel(255,255,255);
-                        pixelArrary[y_][x_] = pixel;
+                        if (isCirle(x,y,x_,y_,SELECTRADIUS)){
+                            int pixel = GImage.createRGBPixel(255, 255, 255);
+                            pixelArrary[y_][x_] = pixel;
+                        }
                     }
                 }
             }
         }
         return new GImage(pixelArrary);
     }
+
+    private boolean isCirle(int x, int y, int x_, int y_, int selectradius) {
+        int X = Math.abs(x-x_);
+        int Y = Math.abs(y-y_);
+        if (Math.pow(X,2)+Math.pow(Y,2)<=Math.pow(selectradius,2)){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 
     private int[] getSlectArrary(int x, int RADIUS) {  //获得半径内的像素坐标
         int[] xArrary = new int[(1 + 2 * RADIUS)];
@@ -549,7 +567,29 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return xArrary;
     }
 
-
+    public GImage beautify(File currentfile, int whitening, int smoothing, String filterType) {
+        FacePlus facePlus = new FacePlus();
+        try {
+            String str = facePlus.beautify(currentfile, whitening, smoothing, filterType);
+            int index = str.indexOf("result\":\"");
+            String str2 = str.substring(index+9);
+            str = str2.substring(0,str2.length()-3);
+            byte[] decoded = Base64.getDecoder().decode(str);
+            for (int i = 0; i < decoded.length; i++) {
+                if(decoded[i] < 0){
+                    decoded[i]+=256;
+                }
+            }
+            OutputStream out = new FileOutputStream("./res/0.jpg");
+            out.write(decoded);
+            out.flush();
+            out.close();
+            return new GImage("./res/0.jpg");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 }
