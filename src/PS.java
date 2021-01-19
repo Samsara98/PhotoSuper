@@ -7,7 +7,6 @@ import adalab.core.gui.GuiUtils;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Locale;
 
 import javax.imageio.*;
 import javax.swing.*;
@@ -15,7 +14,8 @@ import javax.swing.*;
 
 public class PS extends GraphicsProgram {
 
-    public static final int APPLICATION_HEIGHT = 700;
+    public static final int APPLICATION_HEIGHT = 720;
+    public static final int APPLICATION_WIDTH = 1080;
 
     // 支持保存为3种图片格式
     private static final String[] SAVE_IMAGE_EXTENSIONS = new String[]{"png", "bmp", "wbmp"};
@@ -33,7 +33,7 @@ public class PS extends GraphicsProgram {
     private GImage currentImage;
 
     //橡皮擦是否打开
-    private boolean cleanSwitch = false;
+    private boolean paintSwitch = false;
 
     File CURRENTFILE;
 
@@ -47,14 +47,19 @@ public class PS extends GraphicsProgram {
 
     //美颜面板是否打开
     private boolean beautifyPanel;
+    private boolean paintPanel;
     JComboBox type;
+    JComboBox paintType;
     JPanel jp = new JPanel();
     JButton btn = new JButton("OK");
 
     public void init() {
-        String[] types = {"tea_time", "wangjiawei", "sakura","17_years_old", "chaplin",
+        String[] types = {"tea_time", "wangjiawei", "sakura", "17_years_old", "chaplin",
                 "jiang_nan", "lavender", "paris", "story", "chanel", "prague", "old_dream"};
         type = new JComboBox(types);
+
+        String[] painttypes = {"oilPainting", "eraser"};
+        paintType = new JComboBox(painttypes);
 
         addButtons();
         addActionListeners();
@@ -88,7 +93,7 @@ public class PS extends GraphicsProgram {
         add(new JButton("对比度增强"), EAST);
         add(new JButton("ZIP"), EAST);
         add(new JButton("放大"), EAST);
-        add(new JButton("橡皮擦"), EAST);
+        add(new JButton("画笔"), EAST);
         add(new JButton("美颜"), EAST);
         add(new JButton("滤镜"), EAST);
 
@@ -188,12 +193,12 @@ public class PS extends GraphicsProgram {
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
         } else if (command.equals("美颜")) {
-            currentImage.saveImage("./res/0.jpg");
-            File file = new File("./res/0.jpg");
-            GImage newImage = algorithms.beautify(file, 100, 100, "calm");
+            currentImage.saveImage(PSAlgorithmsInterface.TMPFILE);
+            File file = new File(PSAlgorithmsInterface.TMPFILE);
+            GImage newImage = algorithms.beautify(file, 70, 70, 50, 50, 50, 50, "beautify");
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
-        }  else if (command.equals("滤镜")) {
+        } else if (command.equals("滤镜")) {
             if (!beautifyPanel) {
                 add(jp, EAST);
                 jp.add(type, EAST);
@@ -201,19 +206,24 @@ public class PS extends GraphicsProgram {
                 btn.addActionListener(this);
                 beautifyPanel = true;
             }
-        }else if (command.equals("OK")) {
+        } else if (command.equals("OK")) {
             String filterType = (String) type.getSelectedItem();
-            currentImage.saveImage("./res/0.jpg");
-            File file = new File("./res/0.jpg");
-            GImage newImage = algorithms.beautify(file, 0, 0, filterType);
+            currentImage.saveImage(PSAlgorithmsInterface.TMPFILE);
+            File file = new File(PSAlgorithmsInterface.TMPFILE);
+            GImage newImage = algorithms.beautify(file, 0, 0, 0, 0, 0, 0, filterType);
             setImage(newImage);
             infoLabel.setText("滤镜" + "已生效。");
-        } else if (command.equals("橡皮擦")) {
-            cleanSwitch = !cleanSwitch;
-            if (cleanSwitch == true) {
-                infoLabel.setText(command + "已生效。");
-            } else {
-                infoLabel.setText(command + "已关闭。");
+        } else if (command.equals("画笔")) {
+            if (!paintPanel) {
+                add(jp, EAST);
+                jp.add(paintType, SOUTH);
+                paintSwitch = !paintSwitch;
+                if (paintSwitch == true) {
+                    infoLabel.setText("画笔" + "已生效。");
+
+                } else {
+                    infoLabel.setText("画笔" + "已关闭。");
+                }
             }
         } else if (command.equals("初始化")) {
             initImage();
@@ -254,10 +264,10 @@ public class PS extends GraphicsProgram {
     public void mousePressed(MouseEvent e) {
         deselect();
 
-        if (cleanSwitch == true) {
+        if (paintSwitch == true) {
             int x = e.getX();
             int y = e.getY();
-            GImage newImage = algorithms.clean(currentImage, x, y);
+            GImage newImage = algorithms.painting(currentImage, x, y, (String) paintType.getSelectedItem());
             setImage(newImage);
         } else if (selectedArea == null) {
             fixedX = e.getX();
@@ -274,8 +284,8 @@ public class PS extends GraphicsProgram {
         int x = e.getX();
         int y = e.getY();
 
-        if (cleanSwitch == true) {
-            GImage newImage = algorithms.clean(currentImage, x, y);
+        if (paintSwitch == true) {
+            GImage newImage = algorithms.painting(currentImage, x, y, (String) paintType.getSelectedItem());
             setImage(newImage);
         } else if (currentImage != null && x <= currentImage.getWidth() && y <= currentImage.getHeight()) {
             double newX = Math.min(fixedX, x);

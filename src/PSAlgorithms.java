@@ -279,17 +279,17 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
-        for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + 1) {  //按马赛克半径内的点形成的方块处理
-            for (int x = 0; x < Width; x += 2 * MOSAIC_RADIUS + 1) {
-                pixelArrary = mosaicPixel(pixelArrary, x, y);
+        for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + +1) {  //按马赛克半径内的点形成的方块处理
+            for (int x = 0; x < Width; x += 2 * MOSAIC_RADIUS + +1) {
+                pixelArrary = mosaicPixel(pixelArrary, x, y, MOSAIC_RADIUS);
             }
         }
         return new GImage(pixelArrary);
     }
 
-    private int[][] mosaicPixel(int[][] pixelArrary, int x, int y) {  //用马赛克半径内随机的一个点替换半径内全部的点
-        int[] xArrary = getArrary(x, MOSAIC_RADIUS);
-        int[] yArrary = getArrary(y, MOSAIC_RADIUS);
+    private int[][] mosaicPixel(int[][] pixelArrary, int x, int y, int RADIUS) {  //用马赛克半径内随机的一个点替换半径内全部的点
+        int[] xArrary = getArrary(x, RADIUS);
+        int[] yArrary = getArrary(y, RADIUS);
         java.util.List<Integer> pixel = new ArrayList<>();
         RandomGenerator randomGenerator = new RandomGenerator();
         for (int x_ : xArrary) {
@@ -525,7 +525,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
-    public GImage clean(GImage source, int x, int y) {
+    public GImage painting(GImage source, int x, int y, String paintType) {
         int[][] pixelArrary = source.getPixelArray();
         int[] selectAreaX = getSlectArrary(x, SELECTRADIUS);
         int[] selectAreaY = getSlectArrary(y, SELECTRADIUS);
@@ -533,9 +533,16 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
                 for (int y_ : selectAreaY) {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
-                        if (isCirle(x,y,x_,y_,SELECTRADIUS)){
-                            int pixel = GImage.createRGBPixel(255, 255, 255);
-                            pixelArrary[y_][x_] = pixel;
+                        if (isCirle(x, y, x_, y_, SELECTRADIUS)) {
+                            switch (paintType) {
+                                case "oilPainting":
+                                    pixelArrary = mosaicPixel(pixelArrary, x_, y_, 1);
+                                    break;
+                                case "eraser":
+                                    int pixel = GImage.createRGBPixel(255, 255, 255);
+                                    pixelArrary[y_][x_] = pixel;
+                                    break;
+                            }
                         }
                     }
                 }
@@ -545,11 +552,11 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
     private boolean isCirle(int x, int y, int x_, int y_, int selectradius) {
-        int X = Math.abs(x-x_);
-        int Y = Math.abs(y-y_);
-        if (Math.pow(X,2)+Math.pow(Y,2)<=Math.pow(selectradius,2)){
+        int X = Math.abs(x - x_);
+        int Y = Math.abs(y - y_);
+        if (Math.pow(X, 2) + Math.pow(Y, 2) <= Math.pow(selectradius, 2)) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -567,31 +574,29 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return xArrary;
     }
 
-    public GImage beautify(File currentfile, int whitening, int smoothing, String filterType) {
+    public GImage beautify(File currentfile, int whitening, int smoothing,int thinface,int shrink_face,int enlarge_eye, int remove_eyebrow, String filterType) {
         FacePlus facePlus = new FacePlus();
         try {
-            String str = facePlus.beautify(currentfile, whitening, smoothing, filterType);
+            String str = facePlus.beautify(currentfile, whitening, smoothing,thinface,shrink_face,enlarge_eye,remove_eyebrow, filterType);
             int index = str.indexOf("result\":\"");
-            String str2 = str.substring(index+9);
-            str = str2.substring(0,str2.length()-3);
+            String str2 = str.substring(index + 9);
+            str = str2.substring(0, str2.length() - 3);
             byte[] decoded = Base64.getDecoder().decode(str);
             for (int i = 0; i < decoded.length; i++) {
-                if(decoded[i] < 0){
-                    decoded[i]+=256;
+                if (decoded[i] < 0) {
+                    decoded[i] += 256;
                 }
             }
-            OutputStream out = new FileOutputStream("./res/0.jpg");
+            OutputStream out = new FileOutputStream(TMPFILE);
             out.write(decoded);
             out.flush();
             out.close();
-            return new GImage("./res/0.jpg");
-        }catch (Exception e){
+            return new GImage(TMPFILE);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-
-
 }
 
 

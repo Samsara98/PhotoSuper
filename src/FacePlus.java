@@ -14,7 +14,7 @@ import java.util.Random;
 import javax.net.ssl.SSLException;
 public class FacePlus {
 
-        public String beautify(File currentfile, int whitening,int smoothing,String filterType) throws Exception{
+        public String beautify(File currentfile, int whitening,int smoothing,int thinface,int shrink_face,int enlarge_eye, int remove_eyebrow,String filterType) throws Exception{
 
             File file = currentfile;
             byte[] buff = getBytesFromFile(file);
@@ -25,6 +25,10 @@ public class FacePlus {
             map.put("api_secret", "pmbNMg2uWNHBluHjzpIfTCfiCKf-QNig");
             map.put("whitening", Integer.toString(whitening));
             map.put("smoothing", Integer.toString(smoothing));
+            map.put("thinface", Integer.toString(thinface));
+            map.put("shrink_face", Integer.toString(shrink_face));
+            map.put("enlarge_eye", Integer.toString(enlarge_eye));
+            map.put("remove_eyebrow", Integer.toString(remove_eyebrow));
             map.put("filter_type",filterType);
             map.put("return_landmark", "1");
             map.put("return_attributes", "gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus");

@@ -7,7 +7,8 @@ public interface PSAlgorithmsInterface {
 	public static final int MOSAIC_RADIUS = 3;
 	public static final double SATURATION = 0.8;
 	public static final int ZIPRADIO = 2;
-	public static final int SELECTRADIUS = 30;
+	public static final int SELECTRADIUS = 25;
+	public static String TMPFILE = "./res/tmp.jpg";
 	public GImage flipHorizontal(GImage source);
 	public GImage rotateCounterclockwise(GImage source);
 	public GImage rotateClockwise(GImage source);
