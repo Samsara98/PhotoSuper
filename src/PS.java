@@ -15,7 +15,7 @@ import javax.swing.*;
 
 public class PS extends GraphicsProgram {
 
-    public static final int APPLICATION_HEIGHT = 600;
+    public static final int APPLICATION_HEIGHT = 700;
 
     // 支持保存为3种图片格式
     private static final String[] SAVE_IMAGE_EXTENSIONS = new String[]{"png", "bmp", "wbmp"};
@@ -78,18 +78,19 @@ public class PS extends GraphicsProgram {
         add(new JButton("绿屏扣图"), WEST);
         add(new JButton("卷积"), WEST);
         add(new JButton("裁剪"), WEST);
+        add(new JButton("灰度图"), WEST);
         add(new JButton("均衡化"), WEST);
         add(new JButton("初始化"), EAST);
         add(new JButton("马赛克"), EAST);
         add(new JButton("毛玻璃"), EAST);
         add(new JButton("饱和度增强"), EAST);
-        add(new JButton("灰度图"), EAST);
         add(new JButton("色调调整(冷)"), EAST);
         add(new JButton("对比度增强"), EAST);
         add(new JButton("ZIP"), EAST);
         add(new JButton("放大"), EAST);
         add(new JButton("橡皮擦"), EAST);
         add(new JButton("美颜"), EAST);
+        add(new JButton("滤镜"), EAST);
 
 
         // NORTH是窗口上部
@@ -187,6 +188,12 @@ public class PS extends GraphicsProgram {
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
         } else if (command.equals("美颜")) {
+            currentImage.saveImage("./res/0.jpg");
+            File file = new File("./res/0.jpg");
+            GImage newImage = algorithms.beautify(file, 100, 100, "calm");
+            setImage(newImage);
+            infoLabel.setText(command + "已生效。");
+        }  else if (command.equals("滤镜")) {
             if (!beautifyPanel) {
                 add(jp, EAST);
                 jp.add(type, EAST);
@@ -194,13 +201,13 @@ public class PS extends GraphicsProgram {
                 btn.addActionListener(this);
                 beautifyPanel = true;
             }
-        } else if (command.equals("OK")) {
+        }else if (command.equals("OK")) {
             String filterType = (String) type.getSelectedItem();
             currentImage.saveImage("./res/0.jpg");
             File file = new File("./res/0.jpg");
-            GImage newImage = algorithms.beautify(file, 100, 100, filterType);
+            GImage newImage = algorithms.beautify(file, 0, 0, filterType);
             setImage(newImage);
-            infoLabel.setText(command + "已生效。");
+            infoLabel.setText("滤镜" + "已生效。");
         } else if (command.equals("橡皮擦")) {
             cleanSwitch = !cleanSwitch;
             if (cleanSwitch == true) {
