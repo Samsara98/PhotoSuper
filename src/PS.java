@@ -58,7 +58,7 @@ public class PS extends GraphicsProgram {
                 "jiang_nan", "lavender", "paris", "story", "chanel", "prague", "old_dream"};
         type = new JComboBox(types);
 
-        String[] painttypes = {"oilPainting", "eraser"};
+        String[] painttypes = {"oilPainting", "eraser","dissolve"};
         paintType = new JComboBox(painttypes);
 
         addButtons();

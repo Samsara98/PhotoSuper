@@ -426,15 +426,15 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] newPixelArrary = pixelArrary;
         for (int y = 0; y < Height; y += 2 * MOSAIC_RADIUS + 1) {  //按毛玻璃半径内的点形成的方块处理
             for (int x = 0; x < Width; x += 2 * MOSAIC_RADIUS + 1) {
-                newPixelArrary = groundGlassPixel(newPixelArrary, x, y);
+                newPixelArrary = groundGlassPixel(newPixelArrary, x, y, MOSAIC_RADIUS);
             }
         }
         return new GImage(newPixelArrary);
     }
 
-    private int[][] groundGlassPixel(int[][] pixelArrary, int x, int y) {  //用毛玻璃半径内随机的一个点替换当前点
-        int[] xArrary = getArrary(x, MOSAIC_RADIUS);
-        int[] yArrary = getArrary(y, MOSAIC_RADIUS);
+    private int[][] groundGlassPixel(int[][] pixelArrary, int x, int y,int RADIUS) {  //用毛玻璃半径内随机的一个点替换当前点
+        int[] xArrary = getArrary(x, RADIUS);
+        int[] yArrary = getArrary(y, RADIUS);
         java.util.List<Integer> pixel = new ArrayList<>();
         for (int x_ : xArrary) {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
@@ -480,8 +480,6 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 newPixelArrary[y][x] = pixelArrary[y][x];
             }
         }
-
-
         return new GImage(newPixelArrary);
     }
 
@@ -538,6 +536,9 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                                 case "oilPainting":
                                     pixelArrary = mosaicPixel(pixelArrary, x_, y_, 1);
                                     break;
+                                case "dissolve":
+                                    pixelArrary = groundGlassPixel(pixelArrary, x_, y_, 1);
+                                    break;
                                 case "eraser":
                                     int pixel = GImage.createRGBPixel(255, 255, 255);
                                     pixelArrary[y_][x_] = pixel;
@@ -551,7 +552,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArrary);
     }
 
-    private boolean isCirle(int x, int y, int x_, int y_, int selectradius) {
+    private boolean isCirle(int x, int y, int x_, int y_, int selectradius) {  //判断方块是否处于圆内
         int X = Math.abs(x - x_);
         int Y = Math.abs(y - y_);
         if (Math.pow(X, 2) + Math.pow(Y, 2) <= Math.pow(selectradius, 2)) {
