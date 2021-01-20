@@ -247,7 +247,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
             }
         }
 
-        for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
+        for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，得到亮度小于等于该像素亮度的像素点的个数，以此计算均衡化的亮度
             for (int x_ = 0; x_ < Width; x_++) {
                 int Luminosity = getLuminosity(pixelArray[y_][x_]);
                 /*int sum = 0;
@@ -328,8 +328,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 int aver = (r + g + b) / 3;
                 for (int i = 0; i < 3; i++) {
                     rgb[i] += (rgb[i] - aver) * SATURATION;
-                    rgb[i] = (rgb[i] < 0) ? 0 : rgb[i];
-                    rgb[i] = (rgb[i] > 255) ? 255 : rgb[i];
+                    rgb[i] = rgbBoundary(rgb[i]);
                 }
                 pixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
             }
@@ -368,13 +367,18 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 rgb[1] += Math.abs(rgb[1] - aver) * 0.2;
                 rgb[2] += Math.abs(rgb[2] - aver);
                 for (int j = 0; j < 3; j++) {
-                    rgb[j] = Math.max(rgb[j], 0);
-                    rgb[j] = Math.min(rgb[j], 255);
+                    rgb[j] = rgbBoundary(rgb[j]);
                 }
                 pixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
             }
         }
         return new GImage(pixelArrary);
+    }
+
+    private int rgbBoundary(int rgb) {
+        rgb = Math.max(rgb, 0);
+        rgb = Math.min(rgb, 255);
+        return rgb;
     }
 
     public GImage contrastEnhancement(GImage source) {   //对比度增强算法
@@ -398,7 +402,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         int averLu = sumLu / (Height * Width);
 
-        for (int y_ = 0; y_ < Height; y_++) {  //根据每个像素亮度在pixelLuminosity的位置，计算均衡化的亮度
+        for (int y_ = 0; y_ < Height; y_++) {
             for (int x_ = 0; x_ < Width; x_++) {
                 int Luminosity = getLuminosity(pixelArray[y_][x_]);
                 int r = GImage.getRed(pixelArray[y_][x_]);
@@ -409,8 +413,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 b += (Luminosity - averLu) * 0.6;
                 int[] rgb = {r, g, b};
                 for (int j = 0; j < 3; j++) {
-                    rgb[j] = Math.max(rgb[j], 0);
-                    rgb[j] = Math.min(rgb[j], 255);
+                    rgb[j] = rgbBoundary(rgb[j]);
                 }
                 pixelArray[y_][x_] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
             }
@@ -432,7 +435,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
-    private int[][] groundGlassPixel(int[][] pixelArrary, int x, int y,int RADIUS) {  //用毛玻璃半径内随机的一个点替换当前点
+    private int[][] groundGlassPixel(int[][] pixelArrary, int x, int y,int RADIUS) {  //用毛玻璃半径内随机的一个点替换单个像素点
         int[] xArrary = getArrary(x, RADIUS);
         int[] yArrary = getArrary(y, RADIUS);
         java.util.List<Integer> pixel = new ArrayList<>();
@@ -458,7 +461,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return pixelArrary;
     }
 
-    public GImage zip(GImage source) {   // 压缩算法
+    public GImage zip(GImage source) {   // 压缩算法，隔位取点后拼接
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
@@ -483,13 +486,13 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
-    public GImage extend(GImage source) {   // 放大算法
+    public GImage extend(GImage source) {   // 放大算法，插空放入像素点后卷积算法补充空像素点
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
         int[][] newPixelArrary = new int[Height * ZIPRADIO][Width * ZIPRADIO];
         int[][] newPixelArrary2 = new int[Height * ZIPRADIO][Width * ZIPRADIO];
-        int zero = GImage.createRGBPixel(0, 0, 0, 0);
+        int zero = GImage.createRGBPixel(0, 0, 0, 0);  //将空像素点设为透明，使卷积计算时跳过空点。
         for (int y = 0; y < Height; y += 1) {  //
             for (int i = 0; i < Width; i += 1) {
                 newPixelArrary[y][i * ZIPRADIO] = pixelArrary[y][i];
@@ -523,7 +526,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
-    public GImage painting(GImage source, int x, int y, String paintType) {
+    public GImage painting(GImage source, int x, int y, String paintType) {  //根据选择使用画笔
         int[][] pixelArrary = source.getPixelArray();
         int[] selectAreaX = getSlectArrary(x, SELECTRADIUS);
         int[] selectAreaY = getSlectArrary(y, SELECTRADIUS);
@@ -533,13 +536,13 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
                         if (isCirle(x, y, x_, y_, SELECTRADIUS)) {
                             switch (paintType) {
-                                case "oilPainting":
+                                case "oilPainting":  //油画笔
                                     pixelArrary = mosaicPixel(pixelArrary, x_, y_, 1);
                                     break;
-                                case "dissolve":
+                                case "dissolve":  //粉笔
                                     pixelArrary = groundGlassPixel(pixelArrary, x_, y_, 1);
                                     break;
-                                case "eraser":
+                                case "eraser":    //橡皮擦
                                     int pixel = GImage.createRGBPixel(255, 255, 255);
                                     pixelArrary[y_][x_] = pixel;
                                     break;
@@ -563,7 +566,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
     }
 
 
-    private int[] getSlectArrary(int x, int RADIUS) {  //获得半径内的像素坐标
+    private int[] getSlectArrary(int x, int RADIUS) {  //获得半径内的像素坐标数组
         int[] xArrary = new int[(1 + 2 * RADIUS)];
         xArrary[0] = x;
         int num = RADIUS;
@@ -575,20 +578,21 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return xArrary;
     }
 
-    public GImage beautify(File currentfile, int whitening, int smoothing,int thinface,int shrink_face,int enlarge_eye, int remove_eyebrow, String filterType) {
+    public GImage beautify(File currentfile, int whitening, int smoothing,int thinface, //文件，美颜参数：美白、磨皮、瘦脸（[0,100]）。
+                           int shrink_face,int enlarge_eye, int remove_eyebrow, String filterType) {    //缩脸、大眼、去眉（[0,100]）、滤镜（根据选择）
         FacePlus facePlus = new FacePlus();
         try {
             String str = facePlus.beautify(currentfile, whitening, smoothing,thinface,shrink_face,enlarge_eye,remove_eyebrow, filterType);
-            int index = str.indexOf("result\":\"");
+            int index = str.indexOf("result\":\"");  //返回未String形式的字段map，截取其中result图像内容
             String str2 = str.substring(index + 9);
             str = str2.substring(0, str2.length() - 3);
-            byte[] decoded = Base64.getDecoder().decode(str);
-            for (int i = 0; i < decoded.length; i++) {
+            byte[] decoded = Base64.getDecoder().decode(str);  //解码Base64为二进制数组
+            for (int i = 0; i < decoded.length; i++) {  //转换为图像数组
                 if (decoded[i] < 0) {
                     decoded[i] += 256;
                 }
             }
-            OutputStream out = new FileOutputStream(TMPFILE);
+            OutputStream out = new FileOutputStream(TMPFILE);   //TMPFILE：生成图像临时保存地址
             out.write(decoded);
             out.flush();
             out.close();
