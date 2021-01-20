@@ -375,7 +375,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArrary);
     }
 
-    private int rgbBoundary(int rgb) {
+    private int rgbBoundary(int rgb) { //使rgb值在0-255之间
         rgb = Math.max(rgb, 0);
         rgb = Math.min(rgb, 255);
         return rgb;
