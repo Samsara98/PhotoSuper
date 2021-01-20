@@ -44,6 +44,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArray);
     }
 
+
     public GImage rotateClockwise(GImage source) {
         /************************************************
          * 旋转前，旧图片的信息
@@ -62,16 +63,15 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         /************************************************
          * 新旧数组的像素对应关系
          ************************************************/
-        for (int yNew = 0; yNew < newHeight; yNew++) {
+        for (int yNew = 0; yNew < newHeight; yNew++)
             for (int xNew = 0; xNew < newWidth; xNew++) {
                 int yOld = oldHeight - xNew - 1;
                 int xOld = yNew;
                 newPixelArray[yNew][xNew] = oldPixelArray[yOld][xOld];
             }
-        }
-
         return new GImage(newPixelArray);
     }
+
 
     public GImage flipHorizontal(GImage source) {  //水平翻转算法
         /************************************************
@@ -96,6 +96,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArray);
     }
 
+
     public GImage negative(GImage source) {  //反相算法
         int[][] pixelArray = source.getPixelArray();
         for (int row = 0; row < pixelArray[0].length; row++) {
@@ -112,7 +113,9 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArray);
     }
 
+
     public GImage greenScreen(GImage source) {
+
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
         int Height = pixelArrary.length;
@@ -129,7 +132,9 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArrary);
     }
 
+
     private boolean isGreen(int pixel) {
+
         int r = GImage.getRed(pixel);
         int g = GImage.getGreen(pixel);
         int b = GImage.getBlue(pixel);
@@ -139,6 +144,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
             return g >= 2 * b;
         }
     }
+
 
     public GImage convolution(GImage source) {   //卷积算法
         int[][] pixelArrary = source.getPixelArray();  //图像
@@ -153,6 +159,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return new GImage(newPixelArrary);
     }
+
 
     private int[] getAverageRGB(int[][] pixelArrary, int x, int y) {  //取卷积半径内RGB平均值
         int[] xArrary = getArrary(x, CONVOLUTION_RADIUS);
@@ -180,10 +187,12 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return rgb;
     }
 
+
     private int getAver(java.util.List<Integer> r) {  //取List平均值
         Integer sum = sum(r);
-        return sum / r.size();
+        return (0!=r.size())?sum / r.size():0;
     }
+
 
     private int[] getArrary(int x, int RADIUS) {  //获得像素卷积半径内的像素坐标
         int[] xArrary = new int[(1 + 2 * RADIUS)];
@@ -205,6 +214,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return sum;
     }
+
 
     /**
      * 裁剪图片，裁剪后仅保留选区内容，其他全部删掉
@@ -269,6 +279,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArray);
     }
 
+
     private int getLuminosity(int pixel) {   //根据像素获取亮度
         int r = GImage.getRed(pixel);
         int g = GImage.getGreen(pixel);
@@ -289,11 +300,11 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArrary);
     }
 
+
     private int[][] mosaicPixel(int[][] pixelArrary, int x, int y, int RADIUS) {  //用马赛克半径内随机的一个点替换半径内全部的点
         int[] xArrary = getArrary(x, RADIUS);
         int[] yArrary = getArrary(y, RADIUS);
         java.util.List<Integer> pixel = new ArrayList<>();
-        RandomGenerator randomGenerator = new RandomGenerator();
         for (int x_ : xArrary) {
             if (x_ >= 0 && x_ < pixelArrary[0].length) {
                 for (int y_ : yArrary) {
@@ -315,6 +326,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return pixelArrary;
     }
+
 
     public GImage saturationEnhancement(GImage source) {   //饱和度增强算法
         int[][] pixelArrary = source.getPixelArray();  //图像
@@ -338,6 +350,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArrary);
     }
 
+
     public GImage grey(GImage source) {   //黑白算法
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
@@ -352,6 +365,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return new GImage(pixelArrary);
     }
+
 
     public GImage colorConditioning(GImage source) {   //色调改变算法
         int[][] pixelArrary = source.getPixelArray();  //图像
@@ -377,11 +391,13 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArrary);
     }
 
+
     private int rgbBoundary(int rgb) { //使rgb值在0-255之间
         rgb = Math.max(rgb, 0);
         rgb = Math.min(rgb, 255);
         return rgb;
     }
+
 
     public GImage contrastEnhancement(GImage source) {   //对比度增强算法
         int[][] pixelArray = source.getPixelArray(); //旧图片的像素数组
@@ -424,6 +440,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(pixelArray);
     }
 
+
     public GImage groundGlass(GImage source) {   // 毛玻璃算法
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
@@ -437,7 +454,8 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
-    private int[][] groundGlassPixel(int[][] pixelArrary, int x, int y,int RADIUS) {  //用毛玻璃半径内随机的一个点替换单个像素点
+
+    private int[][] groundGlassPixel(int[][] pixelArrary, int x, int y, int RADIUS) {  //用毛玻璃半径内随机的一个点替换单个像素点
         int[] xArrary = getArrary(x, RADIUS);
         int[] yArrary = getArrary(y, RADIUS);
         java.util.List<Integer> pixel = new ArrayList<>();
@@ -462,6 +480,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return pixelArrary;
     }
+
 
     public GImage zip(GImage source) {   // 压缩算法，隔位取点后拼接
         int[][] pixelArrary = source.getPixelArray();  //图像
@@ -488,6 +507,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return new GImage(newPixelArrary);
     }
 
+
     public GImage extend(GImage source) {   // 放大算法，插空放入像素点后卷积算法补充空像素点
         int[][] pixelArrary = source.getPixelArray();  //图像
         int Width = pixelArrary[0].length;
@@ -495,6 +515,36 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         int[][] newPixelArrary = new int[Height * ZIPRADIO][Width * ZIPRADIO];
         int[][] newPixelArrary2 = new int[Height * ZIPRADIO][Width * ZIPRADIO];
         int zero = GImage.createRGBPixel(0, 0, 0, 0);  //将空像素点设为透明，使卷积计算时跳过空点。
+        newPixelArrary2 = extendPixel(pixelArrary, Width, Height, newPixelArrary, newPixelArrary2, zero); //展开像素，填充透明像素点
+
+        newPixelArrary = convolZeroPixel(Width, Height, newPixelArrary2);  //用卷积算法取代透明像素点
+
+        return new GImage(newPixelArrary);
+    }
+
+
+    private int[][] convolZeroPixel(int Width, int Height, int[][] newPixelArrary2) {
+
+        int[][] newPixelArrary;
+        newPixelArrary = newPixelArrary2;
+        for (int y = 1; y < Height * ZIPRADIO; y += 2) {  //
+            for (int x = 0; x < Width * ZIPRADIO; x += 1) {
+                int[] rgb = getAverageRGB(newPixelArrary2, x, y);
+                newPixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+        for (int x2 = 1; x2 < Width * ZIPRADIO; x2 += 2) {  //
+            for (int y2 = 0; y2 < Height * ZIPRADIO; y2 += 2) {
+                int[] rgb = getAverageRGB(newPixelArrary2, x2, y2);
+                newPixelArrary[y2][x2] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+        return newPixelArrary;
+    }
+
+
+    private int[][] extendPixel(int[][] pixelArrary, int Width, int Height, int[][] newPixelArrary, int[][] newPixelArrary2, int zero) {
+
         for (int y = 0; y < Height; y += 1) {  //
             for (int i = 0; i < Width; i += 1) {
                 newPixelArrary[y][i * ZIPRADIO] = pixelArrary[y][i];
@@ -511,22 +561,9 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 newPixelArrary2[y][x_] = zero;
             }
         }
-        newPixelArrary = newPixelArrary2;
-        for (int y = 1; y < Height * ZIPRADIO; y += 2) {  //
-            for (int x = 0; x < Width * ZIPRADIO; x += 1) {
-                int[] rgb = getAverageRGB(newPixelArrary2, x, y);
-                newPixelArrary[y][x] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-        for (int x2 = 1; x2 < Width * ZIPRADIO; x2 += 2) {  //
-            for (int y2 = 0; y2 < Height * ZIPRADIO; y2 += 2) {
-                int[] rgb = getAverageRGB(newPixelArrary2, x2, y2);
-                newPixelArrary[y2][x2] = GImage.createRGBPixel(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-
-        return new GImage(newPixelArrary);
+        return newPixelArrary2;
     }
+
 
     public GImage painting(GImage source, int x, int y, String paintType) {  //根据选择使用画笔
         int[][] pixelArrary = source.getPixelArray();
@@ -537,18 +574,7 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
                 for (int y_ : selectAreaY) {
                     if (y_ >= 0 && y_ < pixelArrary.length) {
                         if (isCirle(x, y, x_, y_, SELECTRADIUS)) {
-                            switch (paintType) {
-                                case "oilPainting":  //油画笔
-                                    pixelArrary = mosaicPixel(pixelArrary, x_, y_, 1);
-                                    break;
-                                case "dissolve":  //粉笔
-                                    pixelArrary = groundGlassPixel(pixelArrary, x_, y_, 1);
-                                    break;
-                                case "eraser":    //橡皮擦
-                                    int pixel = GImage.createRGBPixel(255, 255, 255);
-                                    pixelArrary[y_][x_] = pixel;
-                                    break;
-                            }
+                            pixelArrary = getPainting(paintType, pixelArrary, x_, y_);
                         }
                     }
                 }
@@ -556,6 +582,25 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return new GImage(pixelArrary);
     }
+
+
+    private int[][] getPainting(String paintType, int[][] pixelArrary, int x_, int y_) {
+
+        switch (paintType) {
+            case "oilPainting":  //油画笔
+                pixelArrary = mosaicPixel(pixelArrary, x_, y_, 1);
+                break;
+            case "dissolve":  //粉笔
+                pixelArrary = groundGlassPixel(pixelArrary, x_, y_, 1);
+                break;
+            case "eraser":    //橡皮擦
+                int pixel = GImage.createRGBPixel(255, 255, 255);
+                pixelArrary[y_][x_] = pixel;
+                break;
+        }
+        return pixelArrary;
+    }
+
 
     private boolean isCirle(int x, int y, int x_, int y_, int selectradius) {  //判断方块是否处于圆内
         int X = Math.abs(x - x_);
@@ -580,11 +625,12 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         return xArrary;
     }
 
-    public GImage beautify(File currentfile, int whitening, int smoothing,int thinface, //文件，美颜参数：美白、磨皮、瘦脸（[0,100]）。
-                           int shrink_face,int enlarge_eye, int remove_eyebrow, String filterType) {    //缩脸、大眼、去眉（[0,100]）、滤镜（根据选择）
+
+    public GImage beautify(File currentfile, int whitening, int smoothing, int thinface, //文件，美颜参数：美白、磨皮、瘦脸（[0,100]）。
+                           int shrink_face, int enlarge_eye, int remove_eyebrow, String filterType) {    //缩脸、大眼、去眉（[0,100]）、滤镜（根据选择）
         FacePlus facePlus = new FacePlus();
         try {
-            String str = facePlus.beautify(currentfile, whitening, smoothing,thinface,shrink_face,enlarge_eye,remove_eyebrow, filterType);
+            String str = facePlus.beautify(currentfile, whitening, smoothing, thinface, shrink_face, enlarge_eye, remove_eyebrow, filterType);
             int index = str.indexOf("result\":\"");  //返回未String形式的字段map，截取其中result图像内容
             String str2 = str.substring(index + 9);
             str = str2.substring(0, str2.length() - 3);
@@ -604,6 +650,54 @@ public class PSAlgorithms implements PSAlgorithmsInterface {
         }
         return null;
     }
+
+
+    public GImage layOut(GImage source) {  //描绘边界
+
+        int[][] pixelArrary = source.getPixelArray();  //图像
+        int Width = pixelArrary[0].length;
+        int Height = pixelArrary.length;
+        int[][] newPixelArrary = new int[Height][Width];
+        int RADIUS = 3;
+
+        for (int y = 0; y < Height; y +=  1) {
+            for (int x = 0; x < Width; x += 1) {
+
+                int MAX_x = Math.min(Width-1, x + RADIUS);
+                int MAX_y = Math.min(Height-1, y + RADIUS);
+                int MIN_x = Math.max(0, x - RADIUS);
+                int MIN_y = Math.max(0, y - RADIUS);
+
+                int bigger = 0;
+                int smaller = 0;
+                int luminosity = getLuminosity(pixelArrary[y][x]);
+                int r = GImage.getRed(pixelArrary[y][x]);
+                int g = GImage.getGreen(pixelArrary[y][x]);
+                int b = GImage.getBlue(pixelArrary[y][x]);
+
+                for (int y_ = MIN_y; y_ <= MAX_y; y_++) {
+                    for (int x_ = MIN_x; x_ <= MAX_x; x_++) {
+                        int luminosity_ = getLuminosity(pixelArrary[y_][x_]);
+                        if (luminosity >= luminosity_) {
+                            smaller += 1;
+                        } else {
+                            bigger += 1;
+                        }
+                    }
+                }
+                double radio = (double) bigger / (smaller - 1);  //半径内明暗比例
+                if (radio >= 0.7 && radio <= 1.3) {
+                    newPixelArrary[y][x] = GImage.createRGBPixel(0,0,0);
+                }
+
+            }
+        }
+
+        return new GImage(newPixelArrary);
+
+    }
+
 }
+
 
 

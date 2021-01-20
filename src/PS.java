@@ -7,6 +7,7 @@ import adalab.core.gui.GuiUtils;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Base64;
 
 import javax.imageio.*;
 import javax.swing.*;
@@ -88,6 +89,7 @@ public class PS extends GraphicsProgram {
         add(new JButton("初始化"), EAST);
         add(new JButton("马赛克"), EAST);
         add(new JButton("毛玻璃"), EAST);
+        add(new JButton("边界"), EAST);
         add(new JButton("饱和度增强"), EAST);
         add(new JButton("色调调整(冷)"), EAST);
         add(new JButton("对比度增强"), EAST);
@@ -96,6 +98,7 @@ public class PS extends GraphicsProgram {
         add(new JButton("画笔"), EAST);
         add(new JButton("美颜"), EAST);
         add(new JButton("滤镜"), EAST);
+
 
 
         // NORTH是窗口上部
@@ -190,6 +193,10 @@ public class PS extends GraphicsProgram {
             infoLabel.setText(command + "已生效。");
         } else if (command.equals("放大")) {
             GImage newImage = algorithms.extend(currentImage);
+            setImage(newImage);
+            infoLabel.setText(command + "已生效。");
+        }else if (command.equals("边界")) {
+            GImage newImage = algorithms.layOut(currentImage);
             setImage(newImage);
             infoLabel.setText(command + "已生效。");
         } else if (command.equals("美颜")) {
